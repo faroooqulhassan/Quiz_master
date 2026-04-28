@@ -1,0 +1,535 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuizMaster - Home</title>
+  <!-- <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap"
+    rel="stylesheet" /> -->
+  <!-- Phosphor Icons - Modern icon set -->
+  <script src="https://unpkg.com/@phosphor-icons/web@2.1.1"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body data-theme="light">
+
+  <!-- NAV -->
+  <nav class="qm-nav">
+    <a href="index.html" class="brand">
+      <span class="brand-dot"></span>QuizMaster
+    </a>
+    <div class="nav-links">
+      <a href="index.html" class="active"><i class="ph ph-house"></i> Home</a>
+      <a href="categories.html"><i class="ph ph-squares-four"></i> Categories</a>
+      <a href="leaderboard.html"><i class="ph ph-trophy"></i> Leaderboard</a>
+      <a href="admin.html"><i class="ph ph-sliders-horizontal"></i> Admin</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
+        <i class="ph ph-moon" id="themeIcon"></i> Dark
+      </button>
+    </div>
+    <button class="nav-hamburger d-md-none" onclick="toggleMobileNav()">
+      <i class="ph ph-list"></i>
+    </button>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html"><i class="ph ph-house"></i> Home</a>
+    <a href="categories.html"><i class="ph ph-squares-four"></i> Categories</a>
+    <a href="leaderboard.html"><i class="ph ph-trophy"></i> Leaderboard</a>
+    <a href="admin.html"><i class="ph ph-sliders-horizontal"></i> Admin</a>
+  </div>
+
+  <!-- HERO -->
+  <section class="hero-section">
+    <div class="hero-content fade-up">
+      <div class="hero-badge"><i class="ph ph-sparkle"></i> Test Your Knowledge</div>
+      <h1>Challenge yourself with <span class="accent-text">smart quizzes</span></h1>
+      <p>Pick a category, answer questions, and compete on the leaderboard. Hundreds of quizzes across all topics — from
+        science to pop culture.</p>
+      <div class="hero-btns">
+        <a href="categories.html" class="btn-primary-custom"><i class="ph ph-play-circle"></i> Start a Quiz</a>
+        <a href="categories.html" class="btn-outline-custom"><i class="ph ph-compass"></i> Browse Categories</a>
+      </div>
+    </div>
+    <div class="hero-visual fade-up" style="animation-delay:0.2s">
+      <div class="quiz-card-preview">
+        <div class="qcard-top">
+          <span class="qcard-cat"><i class="ph ph-globe-hemisphere-west"></i> Geography</span>
+          <span class="qcard-num">Q 2 / 5</span>
+        </div>
+        <div class="progress-bar-custom">
+          <div class="progress-fill" style="width:40%"></div>
+        </div>
+        <p class="qcard-question">What is the capital city of Japan?</p>
+        <div class="qcard-option" onclick="selectOpt(this)"><span class="opt-dot"></span> Beijing</div>
+        <div class="qcard-option selected" onclick="selectOpt(this)"><span class="opt-dot"></span> Tokyo</div>
+        <div class="qcard-option" onclick="selectOpt(this)"><span class="opt-dot"></span> Seoul</div>
+        <div class="qcard-option" onclick="selectOpt(this)"><span class="opt-dot"></span> Bangkok</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- STATS STRIP -->
+  <div class="stats-strip">
+    <div class="stat-item">
+      <span class="stat-num" id="c1">0</span>
+      <span class="stat-label">Total Quizzes</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" id="c2">0</span>
+      <span class="stat-label">Questions</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" id="c3">0</span>
+      <span class="stat-label">Players</span>
+    </div>
+    <div class="stat-item">
+      <span class="stat-num" id="c4">0</span>
+      <span class="stat-label">Categories</span>
+    </div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <section class="section">
+    <h2 class="section-title">Browse Categories</h2>
+    <p class="section-sub">Choose a topic and start your quiz journey</p>
+    <div class="categories-grid">
+      <a href="quiz.html?cat=science" class="cat-card fade-up">
+        <span class="cat-icon"><i class="ph ph-flask"></i></span>
+        <div class="cat-name">Science</div>
+        <div class="cat-count">24 quizzes</div>
+      </a>
+      <a href="quiz.html?cat=history" class="cat-card fade-up">
+        <span class="cat-icon"><i class="ph ph-books"></i></span>
+        <div class="cat-name">History</div>
+        <div class="cat-count">18 quizzes</div>
+      </a>
+      <a href="quiz.html?cat=technology" class="cat-card fade-up">
+        <span class="cat-icon"><i class="ph ph-desktop-tower"></i></span>
+        <div class="cat-name">Technology</div>
+        <div class="cat-count">31 quizzes</div>
+      </a>
+      <a href="quiz.html?cat=geography" class="cat-card fade-up">
+        <span class="cat-icon"><i class="ph ph-globe"></i></span>
+        <div class="cat-name">Geography</div>
+        <div class="cat-count">15 quizzes</div>
+      </a>
+      <a href="quiz.html?cat=popculture" class="cat-card fade-up">
+        <span class="cat-icon"><i class="ph ph-film-strip"></i></span>
+        <div class="cat-name">Pop Culture</div>
+        <div class="cat-count">22 quizzes</div>
+      </a>
+      <a href="quiz.html?cat=sports" class="cat-card fade-up">
+        <span class="cat-icon"><i class="ph ph-soccer-ball"></i></span>
+        <div class="cat-name">Sports</div>
+        <div class="cat-count">19 quizzes</div>
+      </a>
+    </div>
+  </section>
+
+  <!-- QUIZ OF THE DAY -->
+  <section class="section">
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:2rem;align-items:center">
+      <div>
+        <div class="hero-badge" style="margin-bottom:1rem"><i class="ph ph-fire"></i> Featured Today</div>
+        <h2 class="section-title">Quiz of the Day</h2>
+        <p class="section-sub" style="margin-bottom:1.5rem">A new challenge every day. Today's featured quiz is waiting!
+        </p>
+        <div id="qodCard"
+          style="background:var(--card-bg);border:1px solid var(--border);border-radius:20px;overflow:hidden;box-shadow:var(--shadow-md)">
+          <div
+            style="background:linear-gradient(135deg,var(--plum-dark),var(--plum));padding:1.25rem 1.5rem;display:flex;justify-content:space-between;align-items:center">
+            <span id="qodCat"
+              style="background:var(--sage);color:var(--plum-dark);font-family:'Syne',sans-serif;font-size:0.75rem;font-weight:700;padding:4px 12px;border-radius:50px;display:flex;align-items:center;gap:5px">🧬
+              Science</span>
+            <div style="display:flex;align-items:center;gap:6px">
+              <span class="lb-live-dot"></span>
+              <span style="color:rgba(255,255,255,0.7);font-size:0.78rem;font-weight:600">Live Today</span>
+            </div>
+          </div>
+          <div style="padding:1.5rem">
+            <p style="font-family:'Syne',sans-serif;font-size:1.05rem;font-weight:700;color:var(--text-dark);margin-bottom:1.25rem;line-height:1.45"
+              id="qodQuestion">What is the powerhouse of the cell?</p>
+            <div id="qodOptions" style="display:flex;flex-direction:column;gap:0.5rem"></div>
+          </div>
+          <div
+            style="padding:1rem 1.5rem;border-top:1px solid var(--border);display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;gap:1rem;align-items:center">
+              <span style="font-size:0.8rem;color:var(--text-muted);display:flex;align-items:center;gap:4px"><i
+                  class="ph ph-clock"></i> 30 sec</span>
+              <span style="font-size:0.8rem;color:var(--text-muted);display:flex;align-items:center;gap:4px"><i
+                  class="ph ph-star"></i> Medium</span>
+              <span style="font-size:0.8rem;color:var(--text-muted);display:flex;align-items:center;gap:4px"
+                id="qodPlayed"><i class="ph ph-users"></i> 2.4k played</span>
+            </div>
+            <a href="quiz.html?cat=science&diff=medium" class="btn-primary-custom"
+              style="font-size:0.82rem;padding:0.42rem 1.1rem"><i class="ph ph-play"></i> Play</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- RIGHT: Countdown + Week Days -->
+      <div style="display:flex;flex-direction:column;gap:1rem">
+        <!-- Countdown -->
+        <div
+          style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:1.5rem;text-align:center;box-shadow:var(--shadow-sm)">
+          <p
+            style="font-size:0.78rem;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:1.2px;font-family:'Syne',sans-serif;margin-bottom:0.85rem;display:flex;align-items:center;justify-content:center;gap:5px">
+            <i class="ph ph-timer"></i> Next Quiz In
+          </p>
+          <div style="display:flex;justify-content:center;gap:0.75rem">
+            <div style="text-align:center">
+              <div id="cdHr"
+                style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--plum);background:var(--body-bg);border-radius:10px;padding:0.5rem 0.75rem;min-width:56px;border:1px solid var(--border)">
+                00</div>
+              <div
+                style="font-size:0.68rem;color:var(--text-muted);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">
+                Hours</div>
+            </div>
+            <div
+              style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--text-muted);line-height:1.85">
+              :</div>
+            <div style="text-align:center">
+              <div id="cdMin"
+                style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--plum);background:var(--body-bg);border-radius:10px;padding:0.5rem 0.75rem;min-width:56px;border:1px solid var(--border)">
+                00</div>
+              <div
+                style="font-size:0.68rem;color:var(--text-muted);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">
+                Mins</div>
+            </div>
+            <div
+              style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--text-muted);line-height:1.85">
+              :</div>
+            <div style="text-align:center">
+              <div id="cdSec"
+                style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--plum);background:var(--body-bg);border-radius:10px;padding:0.5rem 0.75rem;min-width:56px;border:1px solid var(--border)">
+                00</div>
+              <div
+                style="font-size:0.68rem;color:var(--text-muted);margin-top:4px;font-weight:600;text-transform:uppercase;letter-spacing:0.5px">
+                Secs</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Week Days -->
+        <div
+          style="background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:1.25rem;box-shadow:var(--shadow-sm)">
+          <p
+            style="font-family:'Syne',sans-serif;font-size:0.85rem;font-weight:700;color:var(--text-dark);margin-bottom:1rem;display:flex;align-items:center;gap:6px">
+            <i class="ph ph-calendar-check"></i> This Week's Challenges
+          </p>
+          <div id="weekDays" style="display:flex;flex-direction:column;gap:0.5rem"></div>
+        </div>
+
+        <!-- Share -->
+        <div
+          style="background:linear-gradient(135deg,var(--plum),var(--plum-light));border-radius:16px;padding:1.35rem;text-align:center;position:relative;overflow:hidden">
+          <div
+            style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;border-radius:50%;background:rgba(167,243,208,0.1)">
+          </div>
+          <p
+            style="font-family:'Syne',sans-serif;font-weight:700;color:var(--sage);margin-bottom:0.35rem;position:relative;z-index:1;display:flex;align-items:center;justify-content:center;gap:6px">
+            <i class="ph ph-target"></i> Challenge a Friend!
+          </p>
+          <p
+            style="color:rgba(255,255,255,0.65);font-size:0.82rem;margin-bottom:1rem;font-weight:500;position:relative;z-index:1">
+            Share today's quiz link</p>
+          <button onclick="copyQuizLink()" class="btn-primary-custom"
+            style="background:var(--sage);color:var(--plum-dark);font-size:0.84rem;padding:0.48rem 1.2rem;position:relative;z-index:1">
+            <i class="ph ph-link"></i> Copy Link
+          </button>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how-section">
+    <div class="how-inner">
+      <h2 class="section-title">How it works</h2>
+      <p class="section-sub">Three simple steps to get started</p>
+      <div class="steps-grid">
+        <div class="step-item fade-up">
+          <div class="step-num"><i class="ph ph-squares-four" style="font-size:1.3rem"></i></div>
+          <div class="step-title">Pick a Category</div>
+          <p class="step-desc">Browse from dozens of topics or search for something specific you want to test your
+            skills on.</p>
+        </div>
+        <div class="step-item fade-up">
+          <div class="step-num"><i class="ph ph-pencil-simple" style="font-size:1.3rem"></i></div>
+          <div class="step-title">Answer Questions</div>
+          <p class="step-desc">Multiple choice questions with a countdown timer. Think fast, score high, beat the clock.
+          </p>
+        </div>
+        <div class="step-item fade-up">
+          <div class="step-num"><i class="ph ph-chart-bar" style="font-size:1.3rem"></i></div>
+          <div class="step-title">See Your Score</div>
+          <p class="step-desc">Get instant results, full answer review, and see where you rank on the global
+            leaderboard.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- LEADERBOARD + CTA -->
+  <section class="section two-col-section">
+    <div>
+      <h2 class="section-title">Top Players</h2>
+      <p class="section-sub">This week's leaderboard</p>
+      <div class="leaderboard-card">
+        <div class="lb-header">
+          <span class="lb-title"><i class="ph ph-trophy" style="font-size:1.1rem"></i> Weekly Champions</span>
+          <span class="lb-live"><span class="lb-live-dot"></span> Live</span>
+        </div>
+        <div class="lb-row">
+          <span class="lb-rank gold"><i class="ph ph-medal" style="font-size:1.1rem"></i></span>
+          <div class="lb-avatar" style="background:#fff3cd;color:#b8860b">AK</div>
+          <span class="lb-name">Ali Khan</span>
+          <span class="lb-score">9,850</span>
+        </div>
+        <div class="lb-row">
+          <span class="lb-rank silver">2</span>
+          <div class="lb-avatar" style="background:#e8e0f0;color:#514663">SR</div>
+          <span class="lb-name">Sara Raza</span>
+          <span class="lb-score">9,200</span>
+        </div>
+        <div class="lb-row">
+          <span class="lb-rank bronze">3</span>
+          <div class="lb-avatar" style="background:#e8f5e9;color:#388e3c">UH</div>
+          <span class="lb-name">Usman Haider</span>
+          <span class="lb-score">8,750</span>
+        </div>
+        <div class="lb-row">
+          <span class="lb-rank">4</span>
+          <div class="lb-avatar" style="background:#fce4ec;color:#c2185b">MF</div>
+          <span class="lb-name">Mariam Fatima</span>
+          <span class="lb-score">8,100</span>
+        </div>
+        <div class="lb-row">
+          <span class="lb-rank">5</span>
+          <div class="lb-avatar" style="background:#e3f2fd;color:#1565c0">ZA</div>
+          <span class="lb-name">Zain Ahmed</span>
+          <span class="lb-score">7,640</span>
+        </div>
+      </div>
+    </div>
+    <div class="cta-box">
+      <div style="font-size:3rem;margin-bottom:1rem;position:relative;z-index:1">
+        <i class="ph ph-target" style="color:var(--sage)"></i>
+      </div>
+      <h3 class="cta-title">Ready to compete?</h3>
+      <p class="cta-desc">Join thousands of players and test your knowledge across all categories.</p>
+      <a href="categories.html" class="btn-primary-custom"
+        style="background:var(--sage);color:var(--plum-dark);position:relative;z-index:1">
+        <i class="ph ph-rocket-launch"></i> Start Now
+      </a>
+    </div>
+  </section>
+
+  <!-- TESTIMONIALS -->
+  <section class="how-section">
+    <div class="how-inner">
+      <h2 class="section-title">What players say</h2>
+      <p class="section-sub">Real reviews from our community</p>
+      <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:1.25rem;margin-top:2rem"
+        id="testimonialsGrid"></div>
+      <!-- Rating Summary -->
+      <div
+        style="margin-top:2.5rem;background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:1.5rem;display:flex;gap:2rem;align-items:center;flex-wrap:wrap;box-shadow:var(--shadow-sm)">
+        <div style="text-align:center;min-width:120px">
+          <div style="font-family:'Syne',sans-serif;font-size:3.5rem;font-weight:800;color:var(--plum);line-height:1"
+            id="avgRating">4.8</div>
+          <div style="color:#f59e0b;font-size:1.1rem;margin:4px 0">★★★★★</div>
+          <div style="font-size:0.77rem;color:var(--text-muted);font-weight:500">Average Rating</div>
+        </div>
+        <div style="flex:1;min-width:200px">
+          <div id="ratingBars"></div>
+        </div>
+        <div style="text-align:center;min-width:120px">
+          <div style="font-family:'Syne',sans-serif;font-size:2rem;font-weight:800;color:var(--text-dark)">8.4k+</div>
+          <div style="font-size:0.8rem;color:var(--text-muted);margin-top:4px;font-weight:500">Total Reviews</div>
+          <a href="#"
+            style="font-size:0.8rem;color:var(--plum);font-weight:700;text-decoration:none;margin-top:6px;display:block">Write
+            a review →</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="qm-footer">
+    <span style="color:rgba(255,255,255,0.4)">© 2026</span>
+    <span>QuizMaster</span>
+    <span style="color:rgba(255,255,255,0.25)">|</span>
+    <div class="footer-links">
+      <a href="#">Privacy</a>
+      <a href="#">Terms</a>
+      <a href="#">Contact</a>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    window.addEventListener('load', () => {
+      countUp('c1', 120);
+      countUp('c2', 1500, '+');
+      countUp('c3', 8400, '+');
+      countUp('c4', 12);
+      initQOD();
+      startCountdown();
+      renderWeekDays();
+      renderTestimonials();
+      renderRatingBars();
+    });
+
+    // Theme toggle
+    function toggleTheme() {
+      const body = document.body;
+      const isDark = body.getAttribute('data-theme') === 'dark';
+      body.setAttribute('data-theme', isDark ? 'light' : 'dark');
+      const btn = document.getElementById('themeBtn');
+      const icon = document.getElementById('themeIcon');
+      if (isDark) {
+        btn.innerHTML = '<i class="ph ph-moon" id="themeIcon"></i> Dark';
+      } else {
+        btn.innerHTML = '<i class="ph ph-sun" id="themeIcon"></i> Light';
+      }
+    }
+
+    function toggleMobileNav() {
+      document.getElementById('mobileNav').classList.toggle('open');
+    }
+
+    function selectOpt(el) {
+      document.querySelectorAll('.qcard-option').forEach(o => o.classList.remove('selected'));
+      el.classList.add('selected');
+    }
+
+    // ============ QUIZ OF THE DAY ============
+    const qodData = [
+      { q: "What is the powerhouse of the cell?", opts: ["Nucleus", "Mitochondria", "Ribosome", "Golgi"], ans: 1, cat: "🧬 Science", catId: "science", diff: "medium", played: "2.4k" },
+      { q: "Who invented the World Wide Web?", opts: ["Bill Gates", "Steve Jobs", "Tim Berners-Lee", "Linus Torvalds"], ans: 2, cat: "💻 Technology", catId: "technology", diff: "easy", played: "3.1k" },
+      { q: "Which country has the largest population?", opts: ["USA", "India", "China", "Brazil"], ans: 1, cat: "🌍 Geography", catId: "geography", diff: "easy", played: "4.7k" },
+      { q: "What year did Pakistan first play cricket Test?", opts: ["1948", "1950", "1952", "1954"], ans: 2, cat: "⚽ Sports", catId: "sports", diff: "hard", played: "1.8k" },
+      { q: "What is the chemical formula for water?", opts: ["H2O", "CO2", "O2", "HO2"], ans: 0, cat: "🧬 Science", catId: "science", diff: "easy", played: "5.2k" },
+      { q: "The Renaissance began in which country?", opts: ["France", "Germany", "Italy", "England"], ans: 2, cat: "📚 History", catId: "history", diff: "medium", played: "2.0k" },
+      { q: "What does RAM stand for?", opts: ["Read Access Memory", "Random Access Memory", "Run Active Memory", "Read Active Module"], ans: 1, cat: "💻 Technology", catId: "technology", diff: "easy", played: "6.1k" },
+    ];
+
+    function initQOD() {
+      const qod = qodData[new Date().getDay() % qodData.length];
+      document.getElementById('qodCat').innerHTML = qod.cat;
+      document.getElementById('qodQuestion').textContent = qod.q;
+      document.getElementById('qodPlayed').innerHTML = `<i class="ph ph-users"></i> ${qod.played} played`;
+      document.querySelector('#qodCard a').href = `quiz.html?cat=${qod.catId}&diff=${qod.diff}`;
+      const letters = ['A', 'B', 'C', 'D'];
+      document.getElementById('qodOptions').innerHTML = qod.opts.map((o, i) => `
+        <div onclick="selectQOD(this,${i},${qod.ans})" style="background:var(--body-bg);border:1.5px solid var(--border);border-radius:10px;padding:0.55rem 1rem;font-size:0.85rem;color:var(--text-dark);cursor:pointer;transition:all 0.2s;display:flex;align-items:center;gap:9px;font-weight:500">
+          <span style="width:24px;height:24px;border-radius:50%;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:0.72rem;font-weight:800;color:var(--text-muted);flex-shrink:0">${letters[i]}</span>${o}
+        </div>`).join('');
+    }
+
+    function selectQOD(el, idx, ans) {
+      document.querySelectorAll('#qodOptions > div').forEach(d => { d.style.pointerEvents = 'none'; d.style.opacity = '0.55'; });
+      const isCorrect = idx === ans;
+      el.style.opacity = '1';
+      el.style.border = `1.5px solid ${isCorrect ? '#16a34a' : '#dc2626'}`;
+      el.style.background = isCorrect ? '#dcfce7' : '#fee2e2';
+      el.style.color = isCorrect ? '#14532d' : '#7f1d1d';
+      if (!isCorrect) {
+        const opts = document.querySelectorAll('#qodOptions > div');
+        opts[ans].style.border = '1.5px solid #16a34a';
+        opts[ans].style.background = '#dcfce7';
+        opts[ans].style.color = '#14532d';
+        opts[ans].style.opacity = '1';
+      }
+    }
+
+    // ============ COUNTDOWN ============
+    function startCountdown() {
+      function update() {
+        const now = new Date(), midnight = new Date();
+        midnight.setHours(24, 0, 0, 0);
+        let diff = Math.floor((midnight - now) / 1000);
+        const h = Math.floor(diff / 3600); diff %= 3600;
+        const m = Math.floor(diff / 60), s = diff % 60;
+        document.getElementById('cdHr').textContent = String(h).padStart(2, '0');
+        document.getElementById('cdMin').textContent = String(m).padStart(2, '0');
+        document.getElementById('cdSec').textContent = String(s).padStart(2, '0');
+      }
+      update(); setInterval(update, 1000);
+    }
+
+    // ============ WEEK DAYS ============
+    function renderWeekDays() {
+      const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+      const today = new Date().getDay();
+      const icons = ['ph-globe', 'ph-desktop-tower', 'ph-flask', 'ph-books', 'ph-soccer-ball', 'ph-film-strip', 'ph-target'];
+      document.getElementById('weekDays').innerHTML = days.map((d, i) => {
+        const done = i < today, isToday = i === today;
+        return `<div style="display:flex;align-items:center;gap:10px">
+          <div style="width:32px;height:32px;border-radius:8px;background:${isToday ? 'var(--sage)' : done ? 'var(--plum)' : 'var(--body-bg)'};border:1.5px solid ${isToday ? 'var(--sage-dark)' : done ? 'var(--plum)' : 'var(--border)'};display:flex;align-items:center;justify-content:center;font-size:0.85rem;flex-shrink:0;color:${isToday ? 'var(--plum-dark)' : done ? '#fff' : 'var(--text-muted)'}">
+            ${done ? '<i class="ph ph-check-circle"></i>' : `<i class="ph ${icons[i]}"></i>`}
+          </div>
+          <div style="flex:1"><div style="font-family:'Syne',sans-serif;font-size:0.82rem;font-weight:700;color:${isToday ? 'var(--plum)' : 'var(--text-dark)'}">${d}${isToday ? ' — Today' : ''}</div></div>
+          ${done ? `<span style="font-size:0.72rem;color:#16a34a;font-weight:700;display:flex;align-items:center;gap:3px"><i class="ph ph-check"></i> Done</span>` : isToday ? `<span style="font-size:0.72rem;color:var(--sage-dark);font-weight:700">Active</span>` : `<span style="font-size:0.72rem;color:var(--text-muted)">Locked</span>`}
+        </div>`;
+      }).join('');
+    }
+
+    // ============ COPY LINK ============
+    function copyQuizLink() {
+      navigator.clipboard.writeText(window.location.origin + '/quiz.html?cat=science&diff=medium').catch(() => { });
+      showToast('Link copied! Share with friends 🎉', 'success');
+    }
+
+    // ============ TESTIMONIALS ============
+    const testimonials = [
+      { name: 'Ali Hassan', avatar: 'AH', bg: '#fff3cd', col: '#b8860b', rating: 5, cat: 'Technology', text: 'Sach mein maza aa gaya! Technology category ke questions bht ache thay. Timer feature ne aur bhi exciting bana diya!', date: '2 days ago' },
+      { name: 'Sara Malik', avatar: 'SM', bg: '#e8e0f0', col: '#514663', rating: 5, cat: 'Science', text: 'Bohat clean aur beautiful design hai. Dark mode toh kamaal ka hai. Science quiz mein bahut kuch seekha!', date: '4 days ago' },
+      { name: 'Usman Raza', avatar: 'UR', bg: '#e8f5e9', col: '#388e3c', rating: 4, cat: 'History', text: 'History quiz bahut informative thi. Leaderboard mein apna naam dekhna motivating hai. Aur features chahiye!', date: '1 week ago' },
+      { name: 'Mariam Akhtar', avatar: 'MA', bg: '#fce4ec', col: '#c2185b', rating: 5, cat: 'Geography', text: 'Geography mera favorite tha! Streak counter ne aur bhi hooked kar diya. Roz khelti hun ab 🔥', date: '1 week ago' },
+      { name: 'Zain ul Abideen', avatar: 'ZA', bg: '#e3f2fd', col: '#1565c0', rating: 5, cat: 'Technology', text: 'CS student hun, Technology quiz ne mera revision bana diya. Highly recommend! Admin panel bhi bht acha hai.', date: '2 weeks ago' },
+      { name: 'Hina Qureshi', avatar: 'HQ', bg: '#f3e5f5', col: '#7b1fa2', rating: 4, cat: 'Pop Culture', text: 'Pop culture questions were fun! Design is very pretty especially the color scheme. Keep adding more questions!', date: '2 weeks ago' },
+    ];
+
+    function renderTestimonials() {
+      document.getElementById('testimonialsGrid').innerHTML = testimonials.map((t, i) => `
+        <div class="fade-up" style="animation-delay:${i * 0.08}s;background:var(--card-bg);border:1px solid var(--border);border-radius:16px;padding:1.5rem;transition:all 0.25s;cursor:default;box-shadow:var(--shadow-sm)" onmouseover="this.style.transform='translateY(-5px)';this.style.boxShadow='var(--shadow-lg)'" onmouseout="this.style.transform='';this.style.boxShadow='var(--shadow-sm)'">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:1rem">
+            <div style="width:42px;height:42px;border-radius:50%;background:${t.bg};color:${t.col};display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:0.82rem;flex-shrink:0">${t.avatar}</div>
+            <div>
+              <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:var(--text-dark)">${t.name}</div>
+              <div style="font-size:0.72rem;color:var(--text-muted);font-weight:500">${t.cat} · ${t.date}</div>
+            </div>
+            <div style="margin-left:auto;color:#f59e0b;font-size:0.85rem">${'★'.repeat(t.rating)}${'☆'.repeat(5 - t.rating)}</div>
+          </div>
+          <p style="font-size:0.86rem;color:var(--text-muted);line-height:1.7;font-style:italic;font-weight:500">"${t.text}"</p>
+          <div style="margin-top:0.75rem"><span style="background:var(--sage-light);color:var(--plum-dark);font-size:0.7rem;font-weight:700;padding:3px 10px;border-radius:50px;font-family:'Syne',sans-serif">${t.cat}</span></div>
+        </div>`).join('');
+    }
+
+    // ============ RATING BARS ============
+    function renderRatingBars() {
+      const ratings = [
+        { stars: 5, pct: 76, count: '6.4k' },
+        { stars: 4, pct: 15, count: '1.3k' },
+        { stars: 3, pct: 6, count: '504' },
+        { stars: 2, pct: 2, count: '168' },
+        { stars: 1, pct: 1, count: '84' },
+      ];
+      document.getElementById('ratingBars').innerHTML = ratings.map(r => `
+        <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+          <span style="font-size:0.73rem;color:var(--text-muted);width:28px;flex-shrink:0;font-weight:600">${r.stars}★</span>
+          <div style="flex:1;height:7px;background:var(--border);border-radius:5px;overflow:hidden">
+            <div style="height:100%;width:${r.pct}%;background:${r.stars >= 4 ? 'var(--sage-dark)' : r.stars === 3 ? '#f59e0b' : '#ef4444'};border-radius:5px"></div>
+          </div>
+          <span style="font-size:0.71rem;color:var(--text-muted);width:30px;text-align:right;font-weight:600">${r.count}</span>
+        </div>`).join('');
+    }
+  </script>
+</body>
+
+</html>

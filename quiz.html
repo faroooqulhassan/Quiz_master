@@ -1,0 +1,727 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuizMaster - Quiz</title>
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body data-theme="light">
+  <!-- NAME ENTRY MODAL -->
+  <div class="name-modal-overlay" id="nameModal">
+    <div class="name-modal">
+      <div style="font-size: 2.5rem; margin-bottom: 0.75rem">👋</div>
+      <h2>What's your name?</h2>
+      <p>We'll track your progress and score on the leaderboard</p>
+      <input type="text" class="qm-input" id="playerNameInput" placeholder="Enter your name..." maxlength="20" />
+      <button class="btn-primary-custom" style="width: 100%" onclick="startWithName()">
+        Let's Go! →
+      </button>
+      <button onclick="skipName()" style="
+            background: none;
+            border: none;
+            color: var(--text-muted);
+            font-size: 0.82rem;
+            margin-top: 0.75rem;
+            cursor: pointer;
+            font-family: &quot;DM Sans&quot;, sans-serif;
+          ">
+        Skip for now
+      </button>
+    </div>
+  </div>
+
+  <nav class="qm-nav">
+    <a href="index.html" class="brand"><span class="brand-dot"></span>QuizMaster</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="categories.html">Categories</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="admin.html">Admin</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
+        🌙 Dark
+      </button>
+    </div>
+    <button class="nav-hamburger d-md-none" onclick="toggleMobileNav()">
+      ☰
+    </button>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="categories.html">Categories</a>
+    <a href="leaderboard.html">Leaderboard</a>
+    <a href="admin.html">Admin</a>
+  </div>
+
+  <div class="quiz-wrapper">
+    <!-- CONFETTI -->
+    <canvas id="confetti-canvas"></canvas>
+
+    <!-- STREAK BAR -->
+    <div class="streak-bar" id="streakBar">
+      <span id="streakEmoji">⚡</span>
+      <span id="streakText">Streak: 0</span>
+      <div class="streak-dots">
+        <div class="streak-dot" id="sd0"></div>
+        <div class="streak-dot" id="sd1"></div>
+        <div class="streak-dot" id="sd2"></div>
+      </div>
+    </div>
+
+    <!-- QUIZ META -->
+    <div class="quiz-meta">
+      <span class="quiz-cat-tag" id="catTag">📚 Loading...</span>
+      <div class="quiz-timer" id="timerDisplay">30</div>
+    </div>
+
+    <!-- PROGRESS -->
+    <p class="quiz-progress-label" id="progressLabel">Question 1 of 10</p>
+    <div class="progress-bar-custom" style="margin-bottom: 1.5rem">
+      <div class="progress-fill" id="progressFill" style="width: 10%"></div>
+    </div>
+
+    <!-- QUESTION CARD -->
+    <div class="quiz-question-card" id="questionCard">
+      <div class="quiz-q-num" id="qNum">QUESTION 1</div>
+      <p class="quiz-question" id="questionText">Loading question...</p>
+    </div>
+
+    <!-- FEEDBACK -->
+    <div class="feedback-msg" id="feedbackMsg"></div>
+
+    <!-- OPTIONS -->
+    <div class="options-grid" id="optionsGrid"></div>
+
+    <!-- NAV BUTTONS -->
+    <div class="quiz-nav" style="margin-top: 1.5rem">
+      <a href="categories.html" class="btn-outline-custom" style="font-size: 0.85rem; padding: 0.55rem 1.2rem">✕ Quit
+        Quiz</a>
+      <button class="btn-primary-custom" id="nextBtn" onclick="nextQuestion()" style="display: none">
+        Next →
+      </button>
+    </div>
+
+    <!-- QUESTION MAP -->
+    <div style="
+          margin-top: 2rem;
+          background: var(--card-bg);
+          border: 1px solid var(--border);
+          border-radius: 14px;
+          padding: 1.25rem;
+        ">
+      <p style="
+            font-size: 0.8rem;
+            font-weight: 700;
+            color: var(--text-muted);
+            margin-bottom: 0.75rem;
+            font-family: &quot;Syne&quot;, sans-serif;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+          ">
+        Question Map
+      </p>
+      <div id="qMap" style="display: flex; flex-wrap: wrap; gap: 6px"></div>
+    </div>
+  </div>
+
+  <footer class="qm-footer">
+    Copyright Claim &nbsp;|&nbsp;
+    <span>All Rights Reserved</span> &nbsp;|&nbsp;
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    // ============ SOUND ENGINE ============
+    let audioCtx = null;
+    function unlockAudio() {
+      if (!audioCtx)
+        audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    }
+    function playSound(type) {
+      try {
+        if (!audioCtx) return;
+        const osc = audioCtx.createOscillator();
+        const gain = audioCtx.createGain();
+        osc.connect(gain);
+        gain.connect(audioCtx.destination);
+        const t = audioCtx.currentTime;
+        if (type === "correct") {
+          osc.frequency.setValueAtTime(440, t);
+          osc.frequency.setValueAtTime(550, t + 0.1);
+          osc.frequency.setValueAtTime(660, t + 0.2);
+          gain.gain.setValueAtTime(0.25, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+          osc.start(t);
+          osc.stop(t + 0.4);
+        } else if (type === "wrong") {
+          osc.frequency.setValueAtTime(330, t);
+          osc.frequency.setValueAtTime(220, t + 0.15);
+          gain.gain.setValueAtTime(0.25, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.4);
+          osc.start(t);
+          osc.stop(t + 0.4);
+        } else if (type === "tick") {
+          osc.frequency.setValueAtTime(800, t);
+          gain.gain.setValueAtTime(0.08, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.07);
+          osc.start(t);
+          osc.stop(t + 0.07);
+        } else if (type === "timeup") {
+          osc.type = "sawtooth";
+          osc.frequency.setValueAtTime(200, t);
+          gain.gain.setValueAtTime(0.25, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+          osc.start(t);
+          osc.stop(t + 0.5);
+        } else if (type === "streak") {
+          osc.frequency.setValueAtTime(660, t);
+          osc.frequency.setValueAtTime(880, t + 0.1);
+          gain.gain.setValueAtTime(0.3, t);
+          gain.gain.exponentialRampToValueAtTime(0.001, t + 0.5);
+          osc.start(t);
+          osc.stop(t + 0.5);
+        }
+      } catch (e) { }
+    }
+
+    // ============ CONFETTI ============
+    function launchConfetti(duration = 3000) {
+      const canvas = document.getElementById("confetti-canvas");
+      if (!canvas) return;
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const colors = [
+        "#CACF85",
+        "#514663",
+        "#a8ae5a",
+        "#ffffff",
+        "#ffd700",
+        "#ff6b6b",
+        "#74c0fc",
+      ];
+      const pieces = Array.from({ length: 130 }, () => ({
+        x: Math.random() * canvas.width,
+        y: Math.random() * canvas.height - canvas.height,
+        w: Math.random() * 10 + 5,
+        h: Math.random() * 6 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rot: Math.random() * Math.PI * 2,
+        speed: Math.random() * 3 + 2,
+        rotSpeed: (Math.random() - 0.5) * 0.15,
+        drift: (Math.random() - 0.5) * 1.5,
+        opacity: 1,
+      }));
+      const start = Date.now();
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const elapsed = Date.now() - start;
+        const fadeStart = duration - 800;
+        pieces.forEach((p) => {
+          p.y += p.speed;
+          p.x += p.drift;
+          p.rot += p.rotSpeed;
+          if (elapsed > fadeStart)
+            p.opacity = Math.max(0, 1 - (elapsed - fadeStart) / 800);
+          ctx.save();
+          ctx.globalAlpha = p.opacity;
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+          if (p.y > canvas.height) {
+            p.y = -10;
+            p.x = Math.random() * canvas.width;
+          }
+        });
+        if (Date.now() - start < duration) requestAnimationFrame(draw);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      draw();
+    }
+
+    // ============ STREAK ============
+    let streak = 0;
+    function updateStreak(correct) {
+      if (correct) {
+        streak++;
+        if (streak === 3) playSound("streak");
+      } else {
+        streak = 0;
+      }
+      const bar = document.getElementById("streakBar");
+      const txt = document.getElementById("streakText");
+      const emoji = document.getElementById("streakEmoji");
+      txt.textContent = `Streak: ${streak}`;
+      if (streak >= 3) {
+        bar.classList.add("on-fire");
+        emoji.textContent = "🔥";
+      } else {
+        bar.classList.remove("on-fire");
+        emoji.textContent = "⚡";
+      }
+      for (let i = 0; i < 3; i++) {
+        const dot = document.getElementById("sd" + i);
+        if (dot)
+          dot.classList.toggle(
+            "filled",
+            i < (streak % 3 === 0 && streak > 0 ? 3 : streak % 3),
+          );
+      }
+    }
+
+    // ============ NAME MODAL ============
+    let playerName = localStorage.getItem("qm_player_name") || "";
+    function startWithName() {
+      const val = document.getElementById("playerNameInput").value.trim();
+      if (val) {
+        playerName = val;
+        localStorage.setItem("qm_player_name", val);
+      }
+      closeNameModal();
+    }
+    function skipName() {
+      closeNameModal();
+    }
+    function closeNameModal() {
+      const m = document.getElementById("nameModal");
+      if (m) m.style.display = "none";
+      showSkeletonThenLoad();
+    }
+
+    // ============ SKELETON LOADER ============
+    function showSkeletonThenLoad() {
+      const card = document.getElementById("questionCard");
+      const grid = document.getElementById("optionsGrid");
+      card.innerHTML = `
+    <div class="skeleton skeleton-line short" style="margin-bottom:18px"></div>
+    <div class="skeleton skeleton-title"></div>
+    <div class="skeleton skeleton-line med"></div>
+  `;
+      grid.innerHTML = `
+    <div class="skeleton skeleton-box"></div>
+    <div class="skeleton skeleton-box"></div>
+    <div class="skeleton skeleton-box"></div>
+    <div class="skeleton skeleton-box"></div>
+  `;
+      document.getElementById("nextBtn").style.display = "none";
+      setTimeout(() => {
+        renderQuestion();
+        buildQMap();
+      }, 900);
+    }
+
+    // ============ QUIZ DATA ============
+    const questionBank = {
+      science: [
+        {
+          q: "What is the chemical symbol for Gold?",
+          opts: ["Go", "Gd", "Au", "Ag"],
+          ans: 2,
+        },
+        {
+          q: "How many bones are in the adult human body?",
+          opts: ["196", "206", "216", "226"],
+          ans: 1,
+        },
+        {
+          q: "What planet is known as the Red Planet?",
+          opts: ["Venus", "Jupiter", "Mars", "Saturn"],
+          ans: 2,
+        },
+        {
+          q: "What is the speed of light (approx) in km/s?",
+          opts: ["100,000", "200,000", "300,000", "400,000"],
+          ans: 2,
+        },
+        {
+          q: "Which gas do plants absorb from the atmosphere?",
+          opts: ["Oxygen", "Nitrogen", "Carbon Dioxide", "Hydrogen"],
+          ans: 2,
+        },
+      ],
+      history: [
+        {
+          q: "In which year did World War II end?",
+          opts: ["1943", "1944", "1945", "1946"],
+          ans: 2,
+        },
+        {
+          q: "Who was the first President of the United States?",
+          opts: [
+            "Abraham Lincoln",
+            "Thomas Jefferson",
+            "George Washington",
+            "John Adams",
+          ],
+          ans: 2,
+        },
+        {
+          q: "The Great Wall of China was primarily built during which dynasty?",
+          opts: ["Han", "Tang", "Ming", "Qing"],
+          ans: 2,
+        },
+        {
+          q: "Which country was the first to grant women the right to vote?",
+          opts: ["USA", "UK", "New Zealand", "France"],
+          ans: 2,
+        },
+        {
+          q: "Pakistan gained independence in which year?",
+          opts: ["1945", "1946", "1947", "1948"],
+          ans: 2,
+        },
+      ],
+      technology: [
+        {
+          q: "What does HTML stand for?",
+          opts: [
+            "HyperText Markup Language",
+            "High Tech Modern Language",
+            "HyperText Modern Links",
+            "None of these",
+          ],
+          ans: 0,
+        },
+        {
+          q: "Which company created the JavaScript language?",
+          opts: ["Google", "Microsoft", "Netscape", "Apple"],
+          ans: 2,
+        },
+        {
+          q: "What does CSS stand for?",
+          opts: [
+            "Computer Style Sheets",
+            "Cascading Style Sheets",
+            "Creative Style Syntax",
+            "Coded Style System",
+          ],
+          ans: 1,
+        },
+        {
+          q: "Which data structure uses LIFO (Last In First Out)?",
+          opts: ["Queue", "Stack", "Array", "LinkedList"],
+          ans: 1,
+        },
+        {
+          q: "What is the default port for HTTP?",
+          opts: ["21", "22", "80", "443"],
+          ans: 2,
+        },
+      ],
+      geography: [
+        {
+          q: "What is the capital city of Japan?",
+          opts: ["Beijing", "Seoul", "Tokyo", "Bangkok"],
+          ans: 2,
+        },
+        {
+          q: "Which is the longest river in the world?",
+          opts: ["Amazon", "Nile", "Yangtze", "Mississippi"],
+          ans: 1,
+        },
+        {
+          q: "Which country has the most natural lakes?",
+          opts: ["USA", "Russia", "Canada", "Brazil"],
+          ans: 2,
+        },
+        {
+          q: "What is the capital of Australia?",
+          opts: ["Sydney", "Melbourne", "Brisbane", "Canberra"],
+          ans: 3,
+        },
+        {
+          q: "Which ocean is the largest?",
+          opts: ["Atlantic", "Indian", "Arctic", "Pacific"],
+          ans: 3,
+        },
+      ],
+      default: [
+        {
+          q: "Which planet is closest to the Sun?",
+          opts: ["Venus", "Mercury", "Earth", "Mars"],
+          ans: 1,
+        },
+        { q: "What is 12 x 12?", opts: ["124", "134", "144", "154"], ans: 2 },
+        {
+          q: "Who wrote Romeo and Juliet?",
+          opts: [
+            "Charles Dickens",
+            "William Shakespeare",
+            "Mark Twain",
+            "Leo Tolstoy",
+          ],
+          ans: 1,
+        },
+        {
+          q: "How many continents are there on Earth?",
+          opts: ["5", "6", "7", "8"],
+          ans: 2,
+        },
+        {
+          q: "What is the largest mammal on Earth?",
+          opts: ["Elephant", "Blue Whale", "Giraffe", "Hippo"],
+          ans: 1,
+        },
+      ],
+    };
+
+    const params = new URLSearchParams(window.location.search);
+    const cat = params.get("cat") || "default";
+    const diff = params.get("diff") || "medium";
+    const catNames = {
+      science: "🧬 Science",
+      history: "📚 History",
+      technology: "💻 Technology",
+      geography: "🌍 Geography",
+      popculture: "🎬 Pop Culture",
+      sports: "⚽ Sports",
+      default: "🎯 General",
+    };
+    const timerSecs = { easy: 45, medium: 30, hard: 15 };
+
+    let questions = questionBank[cat] || questionBank.default;
+    let currentQ = 0;
+    let score = 0;
+    let userAnswers = [];
+    let timerVal = timerSecs[diff] || 30;
+    let timerInterval = null;
+    let answered = false;
+
+    // ============ INIT ============
+    function initQuiz() {
+      document.getElementById("catTag").textContent =
+        catNames[cat] || "🎯 Quiz";
+      unlockAudio();
+      if (!playerName) {
+        document.getElementById("nameModal").style.display = "flex";
+      } else {
+        showSkeletonThenLoad();
+        buildQMap();
+      }
+    }
+
+    function renderQuestion() {
+      const q = questions[currentQ];
+      const total = questions.length;
+      const pct = Math.round((currentQ / total) * 100);
+
+      document.getElementById("questionCard").innerHTML = `
+    <div class="quiz-q-num">QUESTION ${currentQ + 1}</div>
+    <p class="quiz-question">${q.q}</p>
+  `;
+      document.getElementById("progressLabel").textContent =
+        `Question ${currentQ + 1} of ${total}`;
+      document.getElementById("progressFill").style.width = pct + "%";
+      document.getElementById("feedbackMsg").className = "feedback-msg";
+      document.getElementById("feedbackMsg").textContent = "";
+      document.getElementById("nextBtn").style.display = "none";
+      answered = false;
+
+      const grid = document.getElementById("optionsGrid");
+      const letters = ["A", "B", "C", "D"];
+      grid.innerHTML = q.opts
+        .map(
+          (opt, i) => `
+    <button class="option-btn" onclick="selectAnswer(${i})" id="opt${i}">
+      <span class="option-letter">${letters[i]}</span>
+      ${opt}
+    </button>
+  `,
+        )
+        .join("");
+
+      startTimer();
+    }
+
+    function startTimer() {
+      clearInterval(timerInterval);
+      timerVal = timerSecs[diff] || 30;
+      updateTimerDisplay();
+      timerInterval = setInterval(() => {
+        timerVal--;
+        updateTimerDisplay();
+        if (timerVal <= 5) {
+          document.getElementById("timerDisplay").classList.add("warning");
+          playSound("tick");
+        }
+        if (timerVal <= 0) {
+          clearInterval(timerInterval);
+          timeUp();
+        }
+      }, 1000);
+    }
+
+    function updateTimerDisplay() {
+      document.getElementById("timerDisplay").textContent = timerVal;
+    }
+
+    function timeUp() {
+      if (answered) return;
+      answered = true;
+      playSound("timeup");
+      updateStreak(false);
+      userAnswers.push({
+        q: currentQ,
+        selected: -1,
+        correct: questions[currentQ].ans,
+      });
+      const fb = document.getElementById("feedbackMsg");
+      fb.className = "feedback-msg wrong";
+      fb.textContent =
+        "⏰ Time's up! Correct answer: " +
+        questions[currentQ].opts[questions[currentQ].ans];
+      highlightCorrect();
+      document
+        .querySelectorAll(".option-btn")
+        .forEach((b) => (b.disabled = true));
+      document.getElementById("nextBtn").style.display = "block";
+      if (currentQ === questions.length - 1)
+        document.getElementById("nextBtn").textContent = "See Results →";
+      updateQMap();
+    }
+
+    function selectAnswer(idx) {
+      if (answered) return;
+      answered = true;
+      clearInterval(timerInterval);
+
+      const q = questions[currentQ];
+      const isCorrect = idx === q.ans;
+      if (isCorrect) score++;
+
+      playSound(isCorrect ? "correct" : "wrong");
+      updateStreak(isCorrect);
+
+      userAnswers.push({ q: currentQ, selected: idx, correct: q.ans });
+
+      document
+        .querySelectorAll(".option-btn")
+        .forEach((b) => (b.disabled = true));
+      document
+        .getElementById("opt" + idx)
+        .classList.add(isCorrect ? "correct" : "wrong");
+      if (!isCorrect) highlightCorrect();
+
+      const fb = document.getElementById("feedbackMsg");
+      fb.className = "feedback-msg " + (isCorrect ? "correct" : "wrong");
+      fb.textContent = isCorrect
+        ? "✓ Correct! Well done!"
+        : "✕ Wrong! Correct: " + q.opts[q.ans];
+
+      document.getElementById("nextBtn").style.display = "block";
+      if (currentQ === questions.length - 1)
+        document.getElementById("nextBtn").textContent = "See Results →";
+      updateQMap();
+    }
+
+    function highlightCorrect() {
+      document
+        .getElementById("opt" + questions[currentQ].ans)
+        .classList.add("correct");
+    }
+
+    function nextQuestion() {
+      currentQ++;
+      if (currentQ >= questions.length) {
+        finishQuiz();
+      } else {
+        // Show skeleton between questions
+        const card = document.getElementById("questionCard");
+        const grid = document.getElementById("optionsGrid");
+        card.innerHTML = `
+      <div class="skeleton skeleton-line short" style="margin-bottom:14px"></div>
+      <div class="skeleton skeleton-title"></div>
+    `;
+        grid.innerHTML = `
+      <div class="skeleton skeleton-box"></div>
+      <div class="skeleton skeleton-box"></div>
+      <div class="skeleton skeleton-box"></div>
+      <div class="skeleton skeleton-box"></div>
+    `;
+        document.getElementById("nextBtn").style.display = "none";
+        document.getElementById("feedbackMsg").className = "feedback-msg";
+        setTimeout(() => renderQuestion(), 600);
+      }
+    }
+
+    function finishQuiz() {
+      clearInterval(timerInterval);
+      // Save quiz history
+      const history = JSON.parse(localStorage.getItem("qm_history") || "[]");
+      history.unshift({
+        cat,
+        diff,
+        score,
+        total: questions.length,
+        pct: Math.round((score / questions.length) * 100),
+        name: playerName || "Anonymous",
+        date: new Date().toLocaleDateString("en-PK"),
+        time: new Date().toLocaleTimeString("en-PK", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+      });
+      localStorage.setItem(
+        "qm_history",
+        JSON.stringify(history.slice(0, 30)),
+      );
+
+      // Fire confetti if score >= 70%
+      const pct = Math.round((score / questions.length) * 100);
+      if (pct >= 70) launchConfetti(3500);
+
+      sessionStorage.setItem("qm_score", score);
+      sessionStorage.setItem("qm_total", questions.length);
+      sessionStorage.setItem("qm_cat", cat);
+      sessionStorage.setItem("qm_answers", JSON.stringify(userAnswers));
+      sessionStorage.setItem("qm_questions", JSON.stringify(questions));
+      sessionStorage.setItem("qm_player", playerName || "Anonymous");
+
+      setTimeout(
+        () => (window.location.href = "results.html"),
+        pct >= 70 ? 2500 : 300,
+      );
+    }
+
+    function buildQMap() {
+      const map = document.getElementById("qMap");
+      if (!map) return;
+      map.innerHTML = questions
+        .map(
+          (_, i) => `
+    <div id="qmap${i}" style="width:32px;height:32px;border-radius:8px;background:var(--border);display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-size:0.78rem;font-weight:700;color:var(--text-muted);transition:all 0.3s">${i + 1}</div>
+  `,
+        )
+        .join("");
+    }
+
+    function updateQMap() {
+      const last = userAnswers[userAnswers.length - 1];
+      if (!last) return;
+      const el = document.getElementById("qmap" + last.q);
+      if (!el) return;
+      el.style.background =
+        last.selected === last.correct
+          ? "#4caf50"
+          : last.selected === -1
+            ? "#ff9800"
+            : "#f44336";
+      el.style.color = "#fff";
+    }
+
+    document.addEventListener("click", unlockAudio, { once: true });
+    initQuiz();
+  </script>
+  */
+</body>
+
+</html>

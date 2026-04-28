@@ -1,0 +1,389 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuizMaster - Categories</title>
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body data-theme="light">
+  <nav class="qm-nav">
+    <a href="index.html" class="brand"><span class="brand-dot"></span>QuizMaster</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="categories.html" class="active">Categories</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="admin.html">Admin</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
+        🌙 Dark
+      </button>
+    </div>
+    <button class="nav-hamburger d-md-none" onclick="toggleMobileNav()">
+      ☰
+    </button>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="categories.html">Categories</a>
+    <a href="leaderboard.html">Leaderboard</a>
+    <a href="admin.html">Admin</a>
+  </div>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1>All Categories</h1>
+    <p>Pick a topic you love and start quizzing!</p>
+    <div class="search-bar-wrapper">
+      <span class="search-icon">🔍</span>
+      <input type="text" class="qm-input" id="searchInput" placeholder="Search categories..."
+        oninput="filterCategories()" />
+    </div>
+  </div>
+
+  <!-- FILTER PILLS -->
+  <div class="cats-section">
+    <div class="filter-row" id="filterRow">
+      <button class="filter-pill active" onclick="setFilter('all', this)">
+        <i class="fa-solid fa-layer-group"></i>
+      </button>
+      <button class="filter-pill" onclick="setFilter('science', this)">
+        <i class="fa-solid fa-flask"></i>
+      </button>
+      <button class="filter-pill" onclick="setFilter('history', this)">
+        <i class="fa-solid fa-landmark"></i>
+      </button>
+      <button class="filter-pill" onclick="setFilter('technology', this)">
+        <i class="fa-solid fa-microchip"></i>
+      </button>
+      <button class="filter-pill" onclick="setFilter('geography', this)">
+        <i class="fa-solid fa-globe"></i>
+      </button>
+      <button class="filter-pill" onclick="setFilter('popculture', this)">
+        <i class="fa-solid fa-music"></i>
+      </button>
+      <button class="filter-pill" onclick="setFilter('sports', this)">
+        <i class="fa-solid fa-futbol"></i>
+      </button>
+      <button class="filter-pill" onclick="setFilter('math', this)">
+        <i class="fa-solid fa-square-root-alt"></i>
+      </button>
+      <button class="filter-pill" onclick="setFilter('language', this)">
+        <i class="fa-solid fa-language"></i>
+      </button>
+    </div>
+
+    <!-- CATEGORIES GRID -->
+    <div class="categories-grid" id="catsGrid">
+      <!-- cards injected by JS -->
+    </div>
+
+    <p id="noResults" style="
+          display: none;
+          text-align: center;
+          color: var(--text-muted);
+          padding: 3rem 0;
+          font-size: 1rem;
+        ">
+      No categories found. Try a different search!
+    </p>
+  </div>
+
+  <!-- QUIZ DIFFICULTY MODAL OVERLAY -->
+  <div id="diffModal" style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 500;
+        display: none;
+        align-items: center;
+        justify-content: center;
+      ">
+    <div style="
+          background: var(--card-bg);
+          border-radius: 20px;
+          padding: 2.5rem;
+          max-width: 420px;
+          width: 90%;
+          text-align: center;
+          border: 1px solid var(--border);
+        ">
+      <div id="modalCatIcon" style="font-size: 3rem; margin-bottom: 1rem"></div>
+      <h3 id="modalCatName" style="
+            font-family: &quot;Syne&quot;, sans-serif;
+            font-size: 1.4rem;
+            font-weight: 800;
+            color: var(--text-dark);
+            margin-bottom: 0.5rem;
+          "></h3>
+      <p style="
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            margin-bottom: 1.75rem;
+          ">
+        Choose your difficulty level
+      </p>
+      <div style="
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+          ">
+        <a id="easyLink" href="#" class="diff-btn" style="
+              background: #e8f5e9;
+              color: #2e7d32;
+              border-radius: 12px;
+              padding: 1rem 0.5rem;
+              text-decoration: none;
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-weight: 700;
+              font-size: 0.85rem;
+              display: block;
+              transition: transform 0.2s;
+            " onmouseover="this.style.transform = 'scale(1.05)'" onmouseout="this.style.transform = 'scale(1)'">
+          🟢<br />Easy
+        </a>
+        <a id="medLink" href="#" class="diff-btn" style="
+              background: #fff3e0;
+              color: #e65100;
+              border-radius: 12px;
+              padding: 1rem 0.5rem;
+              text-decoration: none;
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-weight: 700;
+              font-size: 0.85rem;
+              display: block;
+              transition: transform 0.2s;
+            " onmouseover="this.style.transform = 'scale(1.05)'" onmouseout="this.style.transform = 'scale(1)'">
+          🟡<br />Medium
+        </a>
+        <a id="hardLink" href="#" class="diff-btn" style="
+              background: #ffebee;
+              color: #c62828;
+              border-radius: 12px;
+              padding: 1rem 0.5rem;
+              text-decoration: none;
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-weight: 700;
+              font-size: 0.85rem;
+              display: block;
+              transition: transform 0.2s;
+            " onmouseover="this.style.transform = 'scale(1.05)'" onmouseout="this.style.transform = 'scale(1)'">
+          🔴<br />Hard
+        </a>
+      </div>
+      <button onclick="closeModal()" style="
+            background: none;
+            border: 1px solid var(--border);
+            border-radius: 50px;
+            padding: 8px 20px;
+            color: var(--text-muted);
+            cursor: pointer;
+            font-size: 0.85rem;
+            font-family: &quot;DM Sans&quot;, sans-serif;
+          ">
+        Cancel
+      </button>
+    </div>
+  </div>
+
+  <footer class="qm-footer">
+    Copyright Claim &nbsp;|&nbsp;
+    <span>All Rights Reserved</span> &nbsp;|&nbsp;
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    const allCategories = [
+      {
+        id: "science",
+        icon: "🧬",
+        name: "Science",
+        count: 24,
+        tag: "science",
+        desc: "Biology, Chemistry, Physics",
+      },
+      {
+        id: "history",
+        icon: "📚",
+        name: "History",
+        count: 18,
+        tag: "history",
+        desc: "Ancient to Modern World",
+      },
+      {
+        id: "technology",
+        icon: "💻",
+        name: "Technology",
+        count: 31,
+        tag: "technology",
+        desc: "CS, AI, Programming",
+      },
+      {
+        id: "geography",
+        icon: "🌍",
+        name: "Geography",
+        count: 15,
+        tag: "geography",
+        desc: "Countries, Capitals, Maps",
+      },
+      {
+        id: "popculture",
+        icon: "🎬",
+        name: "Pop Culture",
+        count: 22,
+        tag: "popculture",
+        desc: "Movies, Music, Celebs",
+      },
+      {
+        id: "sports",
+        icon: "⚽",
+        name: "Sports",
+        count: 19,
+        tag: "sports",
+        desc: "Football, Cricket & More",
+      },
+      {
+        id: "math",
+        icon: "➕",
+        name: "Mathematics",
+        count: 12,
+        tag: "math",
+        desc: "Algebra, Calculus, Stats",
+      },
+      {
+        id: "language",
+        icon: "🗣️",
+        name: "Language",
+        count: 10,
+        tag: "language",
+        desc: "English, Urdu, Grammar",
+      },
+      {
+        id: "nature",
+        icon: "🌿",
+        name: "Nature",
+        count: 14,
+        tag: "science",
+        desc: "Plants, Animals, Ecology",
+      },
+      {
+        id: "space",
+        icon: "🚀",
+        name: "Space",
+        count: 9,
+        tag: "science",
+        desc: "Planets, Stars, NASA",
+      },
+      {
+        id: "food",
+        icon: "🍕",
+        name: "Food & Cuisine",
+        count: 11,
+        tag: "popculture",
+        desc: "World Cuisines & Recipes",
+      },
+      {
+        id: "politics",
+        icon: "🏛️",
+        name: "Politics",
+        count: 8,
+        tag: "history",
+        desc: "World Leaders & Governments",
+      },
+    ];
+
+    let activeFilter = "all";
+
+    function renderCards(list) {
+      const grid = document.getElementById("catsGrid");
+      const noRes = document.getElementById("noResults");
+      if (list.length === 0) {
+        grid.innerHTML = "";
+        noRes.style.display = "block";
+        return;
+      }
+      noRes.style.display = "none";
+      grid.innerHTML = list
+        .map(
+          (c, i) => `
+    <div class="cat-card fade-up" style="animation-delay:${i * 0.07}s" onclick="openModal('${c.id}','${c.icon}','${c.name}')">
+      <span class="cat-icon">${c.icon}</span>
+      <div class="cat-name">${c.name}</div>
+      <div class="cat-count" style="margin-bottom:0.4rem">${c.count} quizzes</div>
+      <div style="font-size:0.72rem;color:var(--text-muted)">${c.desc}</div>
+    </div>
+  `,
+        )
+        .join("");
+    }
+
+    function setFilter(tag, el) {
+      activeFilter = tag;
+      document
+        .querySelectorAll(".filter-pill")
+        .forEach((p) => p.classList.remove("active"));
+      el.classList.add("active");
+      applyFilters();
+    }
+
+    function filterCategories() {
+      applyFilters();
+    }
+
+    function applyFilters() {
+      const q = document.getElementById("searchInput").value.toLowerCase();
+      let list = allCategories;
+      if (activeFilter !== "all")
+        list = list.filter((c) => c.tag === activeFilter);
+      if (q)
+        list = list.filter(
+          (c) =>
+            c.name.toLowerCase().includes(q) ||
+            c.desc.toLowerCase().includes(q),
+        );
+      renderCards(list);
+    }
+
+    function openModal(id, icon, name) {
+      document.getElementById("modalCatIcon").textContent = icon;
+      document.getElementById("modalCatName").textContent = name;
+      document.getElementById("easyLink").href =
+        `quiz.html?cat=${id}&diff=easy`;
+      document.getElementById("medLink").href =
+        `quiz.html?cat=${id}&diff=medium`;
+      document.getElementById("hardLink").href =
+        `quiz.html?cat=${id}&diff=hard`;
+      const modal = document.getElementById("diffModal");
+      modal.style.display = "flex";
+    }
+
+    function closeModal() {
+      document.getElementById("diffModal").style.display = "none";
+    }
+
+    document
+      .getElementById("diffModal")
+      .addEventListener("click", function (e) {
+        if (e.target === this) closeModal();
+      });
+
+    renderCards(allCategories);
+
+    // Auto-open if came from a direct link with ?cat=
+    const urlCat = new URLSearchParams(window.location.search).get("cat");
+    if (urlCat) {
+      const found = allCategories.find((c) => c.id === urlCat);
+      if (found) openModal(found.id, found.icon, found.name);
+    }
+  </script>
+</body>
+
+</html>

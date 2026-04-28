@@ -1,0 +1,415 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuizMaster - Results</title>
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body data-theme="light">
+  <canvas id="confetti-canvas"></canvas>
+
+  <nav class="qm-nav">
+    <a href="index.html" class="brand"><span class="brand-dot"></span>QuizMaster</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="categories.html">Categories</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="admin.html">Admin</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
+        🌙 Dark
+      </button>
+    </div>
+    <button class="nav-hamburger d-md-none" onclick="toggleMobileNav()">
+      ☰
+    </button>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="categories.html">Categories</a>
+    <a href="leaderboard.html">Leaderboard</a>
+    <a href="admin.html">Admin</a>
+  </div>
+
+  <div class="results-wrapper">
+    <!-- SCORE CARD -->
+    <div class="score-card fade-up">
+      <span class="score-emoji" id="scoreEmoji">🎉</span>
+      <p class="score-label">Your Score</p>
+      <div class="score-big" id="scoreBig">0</div>
+      <p class="score-total" id="scoreTotal">out of 0 questions</p>
+
+      <!-- CIRCULAR PROGRESS -->
+      <div style="
+            margin: 1rem auto;
+            width: 120px;
+            height: 120px;
+            position: relative;
+          ">
+        <svg viewBox="0 0 120 120" width="120" height="120">
+          <circle cx="60" cy="60" r="50" fill="none" stroke="var(--border)" stroke-width="10" />
+          <circle cx="60" cy="60" r="50" fill="none" stroke="var(--plum)" stroke-width="10" stroke-linecap="round"
+            stroke-dasharray="314" stroke-dashoffset="314" id="progressCircle" transform="rotate(-90 60 60)"
+            style="transition: stroke-dashoffset 1s ease" />
+        </svg>
+        <div style="
+              position: absolute;
+              top: 50%;
+              left: 50%;
+              transform: translate(-50%, -50%);
+              text-align: center;
+            ">
+          <span style="
+                font-family: &quot;Syne&quot;, sans-serif;
+                font-size: 1.4rem;
+                font-weight: 800;
+                color: var(--text-dark);
+              " id="pctText">0%</span>
+        </div>
+      </div>
+
+      <!-- STAT CARDS -->
+      <div class="score-stats">
+        <div class="score-stat-item">
+          <span class="score-stat-num" id="statCorrect" style="color: #2e7d32">0</span>
+          <span class="score-stat-label">Correct</span>
+        </div>
+        <div class="score-stat-item">
+          <span class="score-stat-num" id="statWrong" style="color: #c62828">0</span>
+          <span class="score-stat-label">Wrong</span>
+        </div>
+        <div class="score-stat-item">
+          <span class="score-stat-num" id="statSkipped" style="color: #e65100">0</span>
+          <span class="score-stat-label">Skipped</span>
+        </div>
+      </div>
+
+      <!-- RESULT MESSAGE -->
+      <div id="resultMsg" style="
+            margin-top: 1.5rem;
+            padding: 1rem;
+            border-radius: 12px;
+            font-size: 0.95rem;
+            font-weight: 600;
+            font-family: &quot;Syne&quot;, sans-serif;
+          "></div>
+    </div>
+
+    <!-- ACTION BUTTONS -->
+    <div class="result-actions fade-up" style="animation-delay: 0.2s">
+      <a href="categories.html" class="btn-primary-custom">🔄 Try Again</a>
+      <a href="leaderboard.html" class="btn-outline-custom">🏆 Leaderboard</a>
+      <a href="index.html" class="btn-outline-custom">🏠 Home</a>
+    </div>
+
+    <!-- SUBMIT TO LEADERBOARD -->
+    <div class="fade-up" style="
+          animation-delay: 0.3s;
+          background: var(--card-bg);
+          border: 1px solid var(--border);
+          border-radius: 16px;
+          padding: 1.5rem;
+          margin-top: 1.5rem;
+          margin-bottom: 1.5rem;
+        ">
+      <h3 style="
+            font-family: &quot;Syne&quot;, sans-serif;
+            font-size: 1rem;
+            font-weight: 700;
+            color: var(--text-dark);
+            margin-bottom: 1rem;
+          ">
+        🏆 Submit to Leaderboard
+      </h3>
+      <div style="display: flex; gap: 0.75rem; flex-wrap: wrap">
+        <input type="text" class="qm-input" id="playerName" placeholder="Enter your name..."
+          style="flex: 1; min-width: 180px" />
+        <button class="btn-primary-custom" onclick="submitScore()" style="white-space: nowrap">
+          Submit Score
+        </button>
+      </div>
+    </div>
+
+    <!-- ANSWER REVIEW -->
+    <div class="answers-review fade-up" style="animation-delay: 0.4s">
+      <div class="review-header">
+        <h3>📋 Answer Review</h3>
+      </div>
+      <div id="reviewList"></div>
+    </div>
+    <!-- QUIZ HISTORY -->
+    <div class="fade-up" style="animation-delay: 0.5s; margin-top: 1.5rem">
+      <div style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+          ">
+        <h3 style="
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-size: 1.1rem;
+              font-weight: 800;
+              color: var(--text-dark);
+            ">
+          📅 Quiz History
+        </h3>
+        <button onclick="clearHistory()" style="
+              background: none;
+              border: none;
+              color: var(--text-muted);
+              font-size: 0.8rem;
+              cursor: pointer;
+              font-family: &quot;DM Sans&quot;, sans-serif;
+            ">
+          Clear All
+        </button>
+      </div>
+      <div id="historyList"></div>
+      <p id="noHistory" style="
+            display: none;
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 0.88rem;
+            padding: 1.5rem 0;
+          ">
+        No quiz history yet!
+      </p>
+    </div>
+  </div>
+
+  <footer class="qm-footer">
+    Copyright Claim &nbsp;|&nbsp;
+    <span>All Rights Reserved</span> &nbsp;|&nbsp;
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    const score = parseInt(sessionStorage.getItem("qm_score") || "3");
+    const total = parseInt(sessionStorage.getItem("qm_total") || "5");
+    const cat = sessionStorage.getItem("qm_cat") || "general";
+    const answers = JSON.parse(sessionStorage.getItem("qm_answers") || "[]");
+    const questions = JSON.parse(
+      sessionStorage.getItem("qm_questions") || "[]",
+    );
+
+    const pct = total > 0 ? Math.round((score / total) * 100) : 0;
+    const wrong = answers.filter(
+      (a) => a.selected !== -1 && a.selected !== a.correct,
+    ).length;
+    const skipped = answers.filter((a) => a.selected === -1).length;
+
+    // Set score
+    document.getElementById("scoreBig").textContent = score;
+    document.getElementById("scoreTotal").textContent =
+      `out of ${total} questions`;
+    document.getElementById("statCorrect").textContent = score;
+    document.getElementById("statWrong").textContent = wrong;
+    document.getElementById("statSkipped").textContent = skipped;
+    document.getElementById("pctText").textContent = pct + "%";
+
+    // Emoji & message
+    let emoji, msg, msgStyle;
+    if (pct >= 90) {
+      emoji = "🏆";
+      msg = "Outstanding! You're a true champion!";
+      msgStyle = "background:#e8f5e9;color:#1b5e20";
+    } else if (pct >= 70) {
+      emoji = "🎉";
+      msg = "Great job! You're doing really well!";
+      msgStyle = "background:#e8f5e9;color:#2e7d32";
+    } else if (pct >= 50) {
+      emoji = "👍";
+      msg = "Not bad! Keep practicing to improve!";
+      msgStyle = "background:#fff3e0;color:#e65100";
+    } else {
+      emoji = "📚";
+      msg = "Keep studying! You'll do better next time!";
+      msgStyle = "background:#ffebee;color:#c62828";
+    }
+
+    document.getElementById("scoreEmoji").textContent = emoji;
+    const msgEl = document.getElementById("resultMsg");
+    msgEl.textContent = msg;
+    msgEl.style.cssText += msgStyle;
+
+    // Animate circle
+    setTimeout(() => {
+      const circumference = 314;
+      const offset = circumference - (pct / 100) * circumference;
+      document.getElementById("progressCircle").style.strokeDashoffset =
+        offset;
+    }, 200);
+
+    // Answer review
+    const reviewList = document.getElementById("reviewList");
+    if (questions.length === 0) {
+      reviewList.innerHTML =
+        '<div class="review-item" style="color:var(--text-muted);font-size:0.9rem">No answers to review. Take a quiz first!</div>';
+    } else {
+      reviewList.innerHTML = questions
+        .map((q, i) => {
+          const ans = answers.find((a) => a.q === i);
+          const isCorrect = ans && ans.selected === ans.correct;
+          const isSkipped = ans && ans.selected === -1;
+          const selectedText =
+            ans && ans.selected >= 0 ? q.opts[ans.selected] : "Not answered";
+          const correctText = q.opts[q.ans];
+          return `
+      <div class="review-item">
+        <div class="review-q">Q${i + 1}. ${q.q}</div>
+        <div class="review-ans ${isCorrect ? "correct" : "wrong"}">
+          ${isCorrect ? "✓" : isSkipped ? "⏰" : "✕"}
+          Your answer: <strong>${selectedText}</strong>
+        </div>
+        ${!isCorrect ? `<div class="review-correct-ans">✓ Correct: <strong>${correctText}</strong></div>` : ""}
+      </div>
+    `;
+        })
+        .join("");
+    }
+
+    function submitScore() {
+      const name = document.getElementById("playerName").value.trim();
+      if (!name) {
+        showToast("Please enter your name!", "error");
+        return;
+      }
+      // POST to API: fetch('/api/leaderboard', { method:'POST', body: JSON.stringify({name, score, total, cat}) })
+      const entries = JSON.parse(
+        localStorage.getItem("qm_leaderboard") || "[]",
+      );
+      entries.push({
+        name,
+        score,
+        total,
+        pct,
+        cat,
+        date: new Date().toLocaleDateString(),
+      });
+      entries.sort((a, b) => b.score - a.score);
+      localStorage.setItem(
+        "qm_leaderboard",
+        JSON.stringify(entries.slice(0, 50)),
+      );
+      showToast(`Score submitted! Great job, ${name}!`, "success");
+      document.getElementById("playerName").value = "";
+    }
+    // ---- CONFETTI on results page ----
+    (function () {
+      const canvas = document.getElementById("confetti-canvas");
+      if (!canvas || pct < 70) return;
+      const ctx = canvas.getContext("2d");
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      const colors = [
+        "#CACF85",
+        "#514663",
+        "#a8ae5a",
+        "#ffffff",
+        "#ffd700",
+        "#ff6b6b",
+        "#74c0fc",
+      ];
+      const pieces = Array.from({ length: 130 }, () => ({
+        x: Math.random() * canvas.width,
+        y: -20,
+        w: Math.random() * 10 + 5,
+        h: Math.random() * 6 + 4,
+        color: colors[Math.floor(Math.random() * colors.length)],
+        rot: Math.random() * Math.PI * 2,
+        speed: Math.random() * 3 + 2,
+        rotSpeed: (Math.random() - 0.5) * 0.15,
+        drift: (Math.random() - 0.5) * 1.5,
+        opacity: 1,
+      }));
+      const start = Date.now();
+      const duration = 3500;
+      function draw() {
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        const elapsed = Date.now() - start;
+        const fadeStart = duration - 800;
+        pieces.forEach((p) => {
+          p.y += p.speed;
+          p.x += p.drift;
+          p.rot += p.rotSpeed;
+          if (elapsed > fadeStart)
+            p.opacity = Math.max(0, 1 - (elapsed - fadeStart) / 800);
+          ctx.save();
+          ctx.globalAlpha = p.opacity;
+          ctx.translate(p.x, p.y);
+          ctx.rotate(p.rot);
+          ctx.fillStyle = p.color;
+          ctx.fillRect(-p.w / 2, -p.h / 2, p.w, p.h);
+          ctx.restore();
+          if (p.y > canvas.height) {
+            p.y = -10;
+            p.x = Math.random() * canvas.width;
+          }
+        });
+        if (Date.now() - start < duration) requestAnimationFrame(draw);
+        else ctx.clearRect(0, 0, canvas.width, canvas.height);
+      }
+      draw();
+    })();
+
+    // ---- QUIZ HISTORY ----
+    function renderHistory() {
+      const history = JSON.parse(localStorage.getItem("qm_history") || "[]");
+      const list = document.getElementById("historyList");
+      const noH = document.getElementById("noHistory");
+      if (!list) return;
+      if (history.length === 0) {
+        list.innerHTML = "";
+        if (noH) noH.style.display = "block";
+        return;
+      }
+      if (noH) noH.style.display = "none";
+      const catIcons = {
+        science: "🧬",
+        history: "📚",
+        technology: "💻",
+        geography: "🌍",
+        popculture: "🎬",
+        sports: "⚽",
+        default: "🎯",
+      };
+      const pctColor = (p) =>
+        p >= 70 ? "#2e7d32" : p >= 50 ? "#e65100" : "#c62828";
+      list.innerHTML = history
+        .map(
+          (h) => `
+    <div class="history-card">
+      <div class="history-icon">${catIcons[h.cat] || "🎯"}</div>
+      <div class="history-info">
+        <div class="history-cat">${h.cat.charAt(0).toUpperCase() + h.cat.slice(1)} — ${h.diff || "medium"}</div>
+        <div class="history-meta">${h.name} &nbsp;·&nbsp; ${h.date} ${h.time}</div>
+      </div>
+      <div style="text-align:right">
+        <div class="history-score" style="color:${pctColor(h.pct)}">${h.score}/${h.total}</div>
+        <div class="history-pct">${h.pct}%</div>
+      </div>
+    </div>
+  `,
+        )
+        .join("");
+    }
+
+    function clearHistory() {
+      if (!confirm("Clear all quiz history?")) return;
+      localStorage.removeItem("qm_history");
+      renderHistory();
+      showToast("History cleared!", "success");
+    }
+
+    renderHistory();
+  </script>
+</body>
+
+</html>

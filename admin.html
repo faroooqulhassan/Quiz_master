@@ -1,0 +1,739 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuizMaster - Admin Panel</title>
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body data-theme="light">
+  <nav class="qm-nav">
+    <a href="index.html" class="brand"><span class="brand-dot"></span>QuizMaster</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="categories.html">Categories</a>
+      <a href="leaderboard.html">Leaderboard</a>
+      <a href="admin.html" class="active">Admin</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
+        🌙 Dark
+      </button>
+    </div>
+    <button class="nav-hamburger d-md-none" onclick="toggleMobileNav()">
+      ☰
+    </button>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="categories.html">Categories</a>
+    <a href="leaderboard.html">Leaderboard</a>
+    <a href="admin.html">Admin</a>
+  </div>
+
+  <div class="admin-layout">
+    <!-- SIDEBAR -->
+    <aside class="admin-sidebar">
+      <h3>Dashboard</h3>
+      <a href="#" class="sidebar-link active" onclick="showSection('overview', this)"><span class="icon">📊</span>
+        Overview</a>
+      <a href="#" class="sidebar-link" onclick="showSection('addQ', this)"><span class="icon">➕</span> Add Question</a>
+      <a href="#" class="sidebar-link" onclick="showSection('manageQ', this)"><span class="icon">📝</span> Manage
+        Questions</a>
+      <a href="#" class="sidebar-link" onclick="showSection('categories', this)"><span class="icon">🗂️</span>
+        Categories</a>
+      <a href="#" class="sidebar-link" onclick="showSection('leaderboardAdmin', this)"><span class="icon">🏆</span>
+        Leaderboard</a>
+
+      <h3 style="margin-top: 2rem">Site</h3>
+      <a href="index.html" class="sidebar-link"><span class="icon">🌐</span> View Site</a>
+      <a href="categories.html" class="sidebar-link"><span class="icon">🚀</span> Start Quiz</a>
+    </aside>
+
+    <!-- MAIN CONTENT -->
+    <main class="admin-main">
+      <!-- ========== OVERVIEW ========== -->
+      <div id="sec-overview">
+        <div class="admin-topbar">
+          <h2>Dashboard Overview</h2>
+          <button class="btn-primary-custom" onclick="
+                showSection(
+                  'addQ',
+                  document.querySelector('.sidebar-link:nth-child(2)'),
+                )
+              ">
+            + Add Question
+          </button>
+        </div>
+
+        <div class="admin-stats">
+          <div class="admin-stat-card fade-up">
+            <div class="admin-stat-icon">📝</div>
+            <div class="admin-stat-num" id="statTotalQ">0</div>
+            <div class="admin-stat-label">Total Questions</div>
+          </div>
+          <div class="admin-stat-card fade-up">
+            <div class="admin-stat-icon">🗂️</div>
+            <div class="admin-stat-num">8</div>
+            <div class="admin-stat-label">Categories</div>
+          </div>
+          <div class="admin-stat-card fade-up">
+            <div class="admin-stat-icon">🏆</div>
+            <div class="admin-stat-num" id="statPlayers">0</div>
+            <div class="admin-stat-label">Players</div>
+          </div>
+          <div class="admin-stat-card fade-up">
+            <div class="admin-stat-icon">⭐</div>
+            <div class="admin-stat-num" id="statAvg">0%</div>
+            <div class="admin-stat-label">Avg. Score</div>
+          </div>
+        </div>
+
+        <!-- Recent questions table -->
+        <div class="admin-card fade-up">
+          <div class="admin-card-header">
+            <h3>Recent Questions</h3>
+            <button class="btn-edit" onclick="showSection('manageQ', null)">
+              View All
+            </button>
+          </div>
+          <div style="overflow-x: auto">
+            <table class="qm-table" id="recentQTable">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Question</th>
+                  <th>Category</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="recentQBody"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <!-- Leaderboard summary -->
+        <div class="admin-card fade-up">
+          <div class="admin-card-header">
+            <h3>Top Players</h3>
+            <a href="leaderboard.html" class="btn-edit">Full Leaderboard</a>
+          </div>
+          <div style="overflow-x: auto">
+            <table class="qm-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Player</th>
+                  <th>Score</th>
+                  <th>Accuracy</th>
+                </tr>
+              </thead>
+              <tbody id="adminLbBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== ADD QUESTION ========== -->
+      <div id="sec-addQ" style="display: none">
+        <div class="admin-topbar">
+          <h2>Add New Question</h2>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-body">
+            <div class="qm-form-group">
+              <label class="qm-label">Category *</label>
+              <select class="qm-select" id="addCat">
+                <option value="">Select a category</option>
+                <option value="science">🧬 Science</option>
+                <option value="history">📚 History</option>
+                <option value="technology">💻 Technology</option>
+                <option value="geography">🌍 Geography</option>
+                <option value="popculture">🎬 Pop Culture</option>
+                <option value="sports">⚽ Sports</option>
+                <option value="math">➕ Mathematics</option>
+                <option value="language">🗣️ Language</option>
+              </select>
+            </div>
+            <div class="qm-form-group">
+              <label class="qm-label">Difficulty *</label>
+              <select class="qm-select" id="addDiff">
+                <option value="easy">🟢 Easy</option>
+                <option value="medium" selected>🟡 Medium</option>
+                <option value="hard">🔴 Hard</option>
+              </select>
+            </div>
+            <div class="qm-form-group">
+              <label class="qm-label">Question *</label>
+              <textarea class="qm-textarea" id="addQuestion" placeholder="Enter your question here..."></textarea>
+            </div>
+            <div class="qm-form-group">
+              <label class="qm-label">Answer Options *</label>
+              <div class="options-input-grid">
+                <input type="text" class="qm-input" id="optA" placeholder="Option A" />
+                <input type="text" class="qm-input" id="optB" placeholder="Option B" />
+                <input type="text" class="qm-input" id="optC" placeholder="Option C" />
+                <input type="text" class="qm-input" id="optD" placeholder="Option D" />
+              </div>
+            </div>
+            <div class="qm-form-group">
+              <label class="qm-label">Correct Answer *</label>
+              <div style="
+                    display: flex;
+                    gap: 1.5rem;
+                    flex-wrap: wrap;
+                    margin-top: 0.25rem;
+                  ">
+                <label class="correct-option-row"><input type="radio" name="correct" value="0" /> Option
+                  A</label>
+                <label class="correct-option-row"><input type="radio" name="correct" value="1" /> Option
+                  B</label>
+                <label class="correct-option-row"><input type="radio" name="correct" value="2" /> Option
+                  C</label>
+                <label class="correct-option-row"><input type="radio" name="correct" value="3" /> Option
+                  D</label>
+              </div>
+            </div>
+            <div class="qm-form-group">
+              <label class="qm-label">Explanation (optional)</label>
+              <textarea class="qm-textarea" id="addExplanation" placeholder="Explain why this answer is correct..."
+                style="min-height: 70px"></textarea>
+            </div>
+            <div style="display: flex; gap: 0.75rem; flex-wrap: wrap">
+              <button class="btn-primary-custom" onclick="addQuestion()">
+                Save Question
+              </button>
+              <button class="btn-outline-custom" onclick="clearForm()">
+                Clear Form
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== MANAGE QUESTIONS ========== -->
+      <div id="sec-manageQ" style="display: none">
+        <div class="admin-topbar">
+          <h2>Manage Questions</h2>
+          <button class="btn-primary-custom" onclick="showSection('addQ', null)">
+            + Add New
+          </button>
+        </div>
+
+        <!-- Search & Filter -->
+        <div style="
+              display: flex;
+              gap: 0.75rem;
+              margin-bottom: 1.5rem;
+              flex-wrap: wrap;
+            ">
+          <input type="text" class="qm-input" id="qSearch" placeholder="Search questions..." oninput="renderQTable()"
+            style="flex: 1; min-width: 200px" />
+          <select class="qm-select" id="qCatFilter" onchange="renderQTable()" style="width: 180px">
+            <option value="">All Categories</option>
+            <option value="science">Science</option>
+            <option value="history">History</option>
+            <option value="technology">Technology</option>
+            <option value="geography">Geography</option>
+            <option value="popculture">Pop Culture</option>
+            <option value="sports">Sports</option>
+          </select>
+        </div>
+
+        <div class="admin-card">
+          <div style="overflow-x: auto">
+            <table class="qm-table">
+              <thead>
+                <tr>
+                  <th>#</th>
+                  <th>Question</th>
+                  <th>Category</th>
+                  <th>Difficulty</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="manageQBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== CATEGORIES ========== -->
+      <div id="sec-categories" style="display: none">
+        <div class="admin-topbar">
+          <h2>Manage Categories</h2>
+        </div>
+        <div class="admin-card">
+          <div class="admin-card-header">
+            <h3>Add New Category</h3>
+          </div>
+          <div class="admin-card-body">
+            <div style="
+                  display: grid;
+                  grid-template-columns: 1fr 1fr;
+                  gap: 1rem;
+                  margin-bottom: 1rem;
+                ">
+              <div class="qm-form-group" style="margin: 0">
+                <label class="qm-label">Category Name</label><input type="text" class="qm-input" id="newCatName"
+                  placeholder="e.g. Music" />
+              </div>
+              <div class="qm-form-group" style="margin: 0">
+                <label class="qm-label">Emoji Icon</label><input type="text" class="qm-input" id="newCatIcon"
+                  placeholder="e.g. 🎵" />
+              </div>
+            </div>
+            <button class="btn-primary-custom" onclick="addCategory()">
+              Add Category
+            </button>
+          </div>
+        </div>
+        <div class="admin-card" style="margin-top: 1rem">
+          <div class="admin-card-header">
+            <h3>All Categories</h3>
+          </div>
+          <div style="overflow-x: auto">
+            <table class="qm-table">
+              <thead>
+                <tr>
+                  <th>Icon</th>
+                  <th>Name</th>
+                  <th>Questions</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="catTableBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <!-- ========== LEADERBOARD ADMIN ========== -->
+      <div id="sec-leaderboardAdmin" style="display: none">
+        <div class="admin-topbar">
+          <h2>Leaderboard Management</h2>
+          <button class="btn-delete" onclick="clearLeaderboard()">
+            🗑️ Clear All
+          </button>
+        </div>
+        <div class="admin-card">
+          <div style="overflow-x: auto">
+            <table class="qm-table">
+              <thead>
+                <tr>
+                  <th>Rank</th>
+                  <th>Player</th>
+                  <th>Score</th>
+                  <th>Category</th>
+                  <th>Date</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody id="adminFullLbBody"></tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <!-- EDIT MODAL -->
+  <div id="editModal" style="
+        display: none;
+        position: fixed;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 500;
+        align-items: center;
+        justify-content: center;
+        overflow-y: auto;
+        padding: 2rem;
+      ">
+    <div style="
+          background: var(--card-bg);
+          border-radius: 20px;
+          padding: 2rem;
+          max-width: 600px;
+          width: 100%;
+          border: 1px solid var(--border);
+          margin: auto;
+        ">
+      <div style="
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+          ">
+        <h3 style="
+              font-family: &quot;Syne&quot;, sans-serif;
+              font-weight: 800;
+              color: var(--text-dark);
+            ">
+          Edit Question
+        </h3>
+        <button onclick="closeEditModal()" style="
+              background: none;
+              border: none;
+              font-size: 1.4rem;
+              cursor: pointer;
+              color: var(--text-muted);
+            ">
+          ✕
+        </button>
+      </div>
+      <div class="qm-form-group">
+        <label class="qm-label">Question</label><textarea class="qm-textarea" id="editQ"></textarea>
+      </div>
+      <div class="qm-form-group">
+        <label class="qm-label">Options</label>
+        <div class="options-input-grid">
+          <input type="text" class="qm-input" id="editOptA" placeholder="Option A" />
+          <input type="text" class="qm-input" id="editOptB" placeholder="Option B" />
+          <input type="text" class="qm-input" id="editOptC" placeholder="Option C" />
+          <input type="text" class="qm-input" id="editOptD" placeholder="Option D" />
+        </div>
+      </div>
+      <div class="qm-form-group">
+        <label class="qm-label">Correct Answer</label>
+        <div style="display: flex; gap: 1.5rem; flex-wrap: wrap">
+          <label class="correct-option-row"><input type="radio" name="editCorrect" value="0" /> A</label>
+          <label class="correct-option-row"><input type="radio" name="editCorrect" value="1" /> B</label>
+          <label class="correct-option-row"><input type="radio" name="editCorrect" value="2" /> C</label>
+          <label class="correct-option-row"><input type="radio" name="editCorrect" value="3" /> D</label>
+        </div>
+      </div>
+      <input type="hidden" id="editIndex" />
+      <div style="display: flex; gap: 0.75rem">
+        <button class="btn-primary-custom" onclick="saveEdit()">
+          Save Changes
+        </button>
+        <button class="btn-outline-custom" onclick="closeEditModal()">
+          Cancel
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <footer class="qm-footer">
+    Copyright Claim &nbsp;|&nbsp;
+    <span>All Rights Reserved</span> &nbsp;|&nbsp;
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    // ---- DATA ----
+    let questions = JSON.parse(
+      localStorage.getItem("qm_admin_questions") || "[]",
+    );
+    let categories = JSON.parse(
+      localStorage.getItem("qm_admin_cats") ||
+      JSON.stringify([
+        { name: "Science", icon: "🧬" },
+        { name: "History", icon: "📚" },
+        { name: "Technology", icon: "💻" },
+        { name: "Geography", icon: "🌍" },
+        { name: "Pop Culture", icon: "🎬" },
+        { name: "Sports", icon: "⚽" },
+      ]),
+    );
+    const leaderboardData = () =>
+      JSON.parse(localStorage.getItem("qm_leaderboard") || "[]");
+    const diffColors = {
+      easy: "#e8f5e9",
+      medium: "#fff3e0",
+      hard: "#ffebee",
+    };
+    const diffText = { easy: "#2e7d32", medium: "#e65100", hard: "#c62828" };
+    const catIcons = {
+      science: "🧬",
+      history: "📚",
+      technology: "💻",
+      geography: "🌍",
+      popculture: "🎬",
+      sports: "⚽",
+      math: "➕",
+      language: "🗣️",
+    };
+
+    function saveQuestions() {
+      localStorage.setItem("qm_admin_questions", JSON.stringify(questions));
+    }
+    function saveCats() {
+      localStorage.setItem("qm_admin_cats", JSON.stringify(categories));
+    }
+
+    // ---- SECTION SWITCHING ----
+    function showSection(name, el) {
+      document
+        .querySelectorAll('[id^="sec-"]')
+        .forEach((s) => (s.style.display = "none"));
+      document.getElementById("sec-" + name).style.display = "block";
+      if (el) {
+        document
+          .querySelectorAll(".sidebar-link")
+          .forEach((l) => l.classList.remove("active"));
+        el.classList.add("active");
+      }
+      if (name === "overview") renderOverview();
+      if (name === "manageQ") renderQTable();
+      if (name === "categories") renderCatTable();
+      if (name === "leaderboardAdmin") renderAdminLb();
+    }
+
+    // ---- OVERVIEW ----
+    function renderOverview() {
+      document.getElementById("statTotalQ").textContent = questions.length;
+      const lb = leaderboardData();
+      document.getElementById("statPlayers").textContent = lb.length;
+      const avg = lb.length
+        ? Math.round(lb.reduce((s, e) => s + e.pct, 0) / lb.length)
+        : 0;
+      document.getElementById("statAvg").textContent = avg + "%";
+
+      // Recent questions
+      const tbody = document.getElementById("recentQBody");
+      const recent = questions.slice(-5).reverse();
+      tbody.innerHTML = recent.length
+        ? recent
+          .map(
+            (q, i) => `
+    <tr>
+      <td>${questions.length - i}</td>
+      <td style="max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${q.q}</td>
+      <td><span class="badge-cat">${catIcons[q.cat] || "🎯"} ${q.cat}</span></td>
+      <td><div class="action-btns"><button class="btn-edit" onclick="editQuestion(${questions.length - 1 - i})">Edit</button><button class="btn-delete" onclick="deleteQuestion(${questions.length - 1 - i})">Delete</button></div></td>
+    </tr>
+  `,
+          )
+          .join("")
+        : '<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--text-muted)">No questions yet. Add some!</td></tr>';
+
+      // Leaderboard
+      const lbBody = document.getElementById("adminLbBody");
+      lbBody.innerHTML =
+        lb
+          .slice(0, 5)
+          .map(
+            (e, i) => `
+    <tr><td>${i + 1}</td><td>${e.name}</td><td>${e.score}/${e.total}</td><td>${e.pct}%</td></tr>
+  `,
+          )
+          .join("") ||
+        '<tr><td colspan="4" style="text-align:center;padding:1.5rem;color:var(--text-muted)">No entries yet</td></tr>';
+    }
+
+    // ---- ADD QUESTION ----
+    function addQuestion() {
+      const cat = document.getElementById("addCat").value;
+      const diff = document.getElementById("addDiff").value;
+      const q = document.getElementById("addQuestion").value.trim();
+      const optA = document.getElementById("optA").value.trim();
+      const optB = document.getElementById("optB").value.trim();
+      const optC = document.getElementById("optC").value.trim();
+      const optD = document.getElementById("optD").value.trim();
+      const correct = document.querySelector('input[name="correct"]:checked');
+
+      if (!cat || !q || !optA || !optB || !optC || !optD || !correct) {
+        showToast("Please fill all required fields!", "error");
+        return;
+      }
+
+      questions.push({
+        cat,
+        diff,
+        q,
+        opts: [optA, optB, optC, optD],
+        ans: parseInt(correct.value),
+        explanation: document.getElementById("addExplanation").value.trim(),
+      });
+      saveQuestions();
+      showToast("Question added successfully!", "success");
+      clearForm();
+    }
+
+    function clearForm() {
+      [
+        "addCat",
+        "addDiff",
+        "addQuestion",
+        "optA",
+        "optB",
+        "optC",
+        "optD",
+        "addExplanation",
+      ].forEach((id) => {
+        const el = document.getElementById(id);
+        if (el) el.value = id === "addDiff" ? "medium" : "";
+      });
+      document
+        .querySelectorAll('input[name="correct"]')
+        .forEach((r) => (r.checked = false));
+    }
+
+    // ---- MANAGE QUESTIONS ----
+    function renderQTable() {
+      const search = (
+        document.getElementById("qSearch")?.value || ""
+      ).toLowerCase();
+      const catF = document.getElementById("qCatFilter")?.value || "";
+      let data = questions.map((q, i) => ({ ...q, i }));
+      if (search)
+        data = data.filter((q) => q.q.toLowerCase().includes(search));
+      if (catF) data = data.filter((q) => q.cat === catF);
+
+      const tbody = document.getElementById("manageQBody");
+      tbody.innerHTML = data.length
+        ? data
+          .map(
+            (q) => `
+    <tr>
+      <td>${q.i + 1}</td>
+      <td style="max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${q.q}</td>
+      <td><span class="badge-cat">${catIcons[q.cat] || "🎯"} ${q.cat}</span></td>
+      <td><span style="background:${diffColors[q.diff]};color:${diffText[q.diff]};font-size:0.72rem;font-weight:700;padding:3px 8px;border-radius:50px;font-family:'Syne',sans-serif">${q.diff}</span></td>
+      <td><div class="action-btns"><button class="btn-edit" onclick="editQuestion(${q.i})">Edit</button><button class="btn-delete" onclick="deleteQuestion(${q.i})">Delete</button></div></td>
+    </tr>
+  `,
+          )
+          .join("")
+        : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">No questions found.</td></tr>';
+    }
+
+    function deleteQuestion(i) {
+      if (!confirm("Delete this question?")) return;
+      questions.splice(i, 1);
+      saveQuestions();
+      renderQTable();
+      showToast("Question deleted.", "success");
+    }
+
+    function editQuestion(i) {
+      const q = questions[i];
+      document.getElementById("editQ").value = q.q;
+      document.getElementById("editOptA").value = q.opts[0] || "";
+      document.getElementById("editOptB").value = q.opts[1] || "";
+      document.getElementById("editOptC").value = q.opts[2] || "";
+      document.getElementById("editOptD").value = q.opts[3] || "";
+      document.getElementById("editIndex").value = i;
+      const radio = document.querySelector(
+        `input[name="editCorrect"][value="${q.ans}"]`,
+      );
+      if (radio) radio.checked = true;
+      document.getElementById("editModal").style.display = "flex";
+    }
+
+    function saveEdit() {
+      const i = parseInt(document.getElementById("editIndex").value);
+      const correct = document.querySelector(
+        'input[name="editCorrect"]:checked',
+      );
+      if (!correct) {
+        showToast("Select correct answer!", "error");
+        return;
+      }
+      questions[i].q = document.getElementById("editQ").value.trim();
+      questions[i].opts = [
+        document.getElementById("editOptA").value.trim(),
+        document.getElementById("editOptB").value.trim(),
+        document.getElementById("editOptC").value.trim(),
+        document.getElementById("editOptD").value.trim(),
+      ];
+      questions[i].ans = parseInt(correct.value);
+      saveQuestions();
+      closeEditModal();
+      renderQTable();
+      showToast("Question updated!", "success");
+    }
+
+    function closeEditModal() {
+      document.getElementById("editModal").style.display = "none";
+    }
+
+    // ---- CATEGORIES ----
+    function renderCatTable() {
+      const tbody = document.getElementById("catTableBody");
+      tbody.innerHTML = categories
+        .map(
+          (c, i) => `
+    <tr>
+      <td style="font-size:1.4rem">${c.icon}</td>
+      <td><strong>${c.name}</strong></td>
+      <td>${questions.filter((q) => q.cat === c.name.toLowerCase()).length}</td>
+      <td><button class="btn-delete" onclick="deleteCategory(${i})">Delete</button></td>
+    </tr>
+  `,
+        )
+        .join("");
+    }
+
+    function addCategory() {
+      const name = document.getElementById("newCatName").value.trim();
+      const icon = document.getElementById("newCatIcon").value.trim() || "📁";
+      if (!name) {
+        showToast("Enter category name!", "error");
+        return;
+      }
+      categories.push({ name, icon });
+      saveCats();
+      renderCatTable();
+      document.getElementById("newCatName").value = "";
+      document.getElementById("newCatIcon").value = "";
+      showToast("Category added!", "success");
+    }
+
+    function deleteCategory(i) {
+      if (!confirm("Delete this category?")) return;
+      categories.splice(i, 1);
+      saveCats();
+      renderCatTable();
+      showToast("Category deleted.", "success");
+    }
+
+    // ---- LEADERBOARD ADMIN ----
+    function renderAdminLb() {
+      const lb = leaderboardData();
+      const tbody = document.getElementById("adminFullLbBody");
+      tbody.innerHTML = lb.length
+        ? lb
+          .map(
+            (e, i) => `
+    <tr>
+      <td><strong>${i + 1}</strong></td>
+      <td>${e.name}</td>
+      <td>${e.score}/${e.total} (${e.pct}%)</td>
+      <td><span class="badge-cat">${catIcons[e.cat] || "🎯"} ${e.cat || "—"}</span></td>
+      <td>${e.date || "—"}</td>
+      <td><button class="btn-delete" onclick="deleteLbEntry(${i})">Delete</button></td>
+    </tr>
+  `,
+          )
+          .join("")
+        : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">No entries yet.</td></tr>';
+    }
+
+    function deleteLbEntry(i) {
+      const lb = leaderboardData();
+      lb.splice(i, 1);
+      localStorage.setItem("qm_leaderboard", JSON.stringify(lb));
+      renderAdminLb();
+      showToast("Entry removed.", "success");
+    }
+
+    function clearLeaderboard() {
+      if (!confirm("Clear ALL leaderboard entries?")) return;
+      localStorage.removeItem("qm_leaderboard");
+      renderAdminLb();
+      showToast("Leaderboard cleared.", "success");
+    }
+
+    // ---- INIT ----
+    renderOverview();
+  </script>
+</body>
+
+</html>

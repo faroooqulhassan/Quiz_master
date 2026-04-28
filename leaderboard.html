@@ -1,0 +1,331 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>QuizMaster - Leaderboard</title>
+  <!-- Google Fonts: Inter -->
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet" />
+  <!-- Font Awesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body data-theme="light">
+  <nav class="qm-nav">
+    <a href="index.html" class="brand"><span class="brand-dot"></span>QuizMaster</a>
+    <div class="nav-links">
+      <a href="index.html">Home</a>
+      <a href="categories.html">Categories</a>
+      <a href="leaderboard.html" class="active">Leaderboard</a>
+      <a href="admin.html">Admin</a>
+      <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
+        🌙 Dark
+      </button>
+    </div>
+    <button class="nav-hamburger d-md-none" onclick="toggleMobileNav()">
+      ☰
+    </button>
+  </nav>
+  <div class="mobile-nav" id="mobileNav">
+    <a href="index.html">Home</a>
+    <a href="categories.html">Categories</a>
+    <a href="leaderboard.html">Leaderboard</a>
+    <a href="admin.html">Admin</a>
+  </div>
+
+  <!-- PAGE HEADER -->
+  <div class="page-header">
+    <h1>🏆 Leaderboard</h1>
+    <p>Top players from around the world</p>
+  </div>
+
+  <div class="section" style="max-width: 800px">
+    <!-- FILTER TABS -->
+    <div class="filter-row" style="margin-bottom: 1.5rem">
+      <button class="filter-pill active" onclick="setTab('all', this)">
+        All Time
+      </button>
+      <button class="filter-pill" onclick="setTab('week', this)">
+        This Week
+      </button>
+      <button class="filter-pill" onclick="setTab('today', this)">
+        Today
+      </button>
+    </div>
+
+    <!-- CATEGORY FILTER -->
+    <div class="filter-row" style="margin-bottom: 2rem">
+      <button class="filter-pill active" onclick="setCatFilter('all', this)">
+        <i class="fa-solid fa-layer-group"></i>
+      </button>
+      <button class="filter-pill" onclick="setCatFilter('science', this)">
+        <i class="fa-solid fa-flask"></i>
+      </button>
+      <button class="filter-pill" onclick="setCatFilter('technology', this)">
+        <i class="fa-solid fa-microchip"></i>
+      </button>
+      <button class="filter-pill" onclick="setCatFilter('geography', this)">
+        <i class="fa-solid fa-globe"></i>
+      </button>
+      <button class="filter-pill" onclick="setCatFilter('history', this)">
+        <i class="fa-solid fa-landmark"></i>
+      </button>
+    </div>
+
+    <!-- TOP 3 PODIUM -->
+    <div id="podium" style="
+          display: grid;
+          grid-template-columns: 1fr 1fr 1fr;
+          gap: 1rem;
+          margin-bottom: 2rem;
+          align-items: end;
+        ">
+      <!-- injected by JS -->
+    </div>
+
+    <!-- FULL TABLE -->
+    <div class="leaderboard-card">
+      <div class="lb-header">
+        <span class="lb-title">📋 Full Rankings</span>
+        <span class="lb-live">● Updated live</span>
+      </div>
+      <div style="overflow-x: auto">
+        <table class="qm-table" id="lbTable">
+          <thead>
+            <tr>
+              <th style="width: 50px">Rank</th>
+              <th>Player</th>
+              <th>Category</th>
+              <th>Score</th>
+              <th>Accuracy</th>
+              <th>Date</th>
+            </tr>
+          </thead>
+          <tbody id="lbBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <p style="
+          text-align: center;
+          color: var(--text-muted);
+          font-size: 0.82rem;
+          margin-top: 1rem;
+        ">
+      Play a quiz and submit your score to appear here!
+    </p>
+  </div>
+
+  <footer class="qm-footer">
+    Copyright Claim &nbsp;|&nbsp;
+    <span>All Rights Reserved</span> &nbsp;|&nbsp;
+  </footer>
+
+  <script src="main.js"></script>
+  <script>
+    // Default leaderboard data (will merge with localStorage entries from results page)
+    const defaultEntries = [
+      {
+        name: "Ali Khan",
+        score: 10,
+        total: 10,
+        pct: 100,
+        cat: "technology",
+        date: "25/04/2026",
+      },
+      {
+        name: "Sara Raza",
+        score: 9,
+        total: 10,
+        pct: 90,
+        cat: "science",
+        date: "25/04/2026",
+      },
+      {
+        name: "Usman Haider",
+        score: 9,
+        total: 10,
+        pct: 90,
+        cat: "geography",
+        date: "24/04/2026",
+      },
+      {
+        name: "Mariam Fatima",
+        score: 8,
+        total: 10,
+        pct: 80,
+        cat: "history",
+        date: "24/04/2026",
+      },
+      {
+        name: "Zain Ahmed",
+        score: 8,
+        total: 10,
+        pct: 80,
+        cat: "technology",
+        date: "23/04/2026",
+      },
+      {
+        name: "Hina Malik",
+        score: 7,
+        total: 10,
+        pct: 70,
+        cat: "science",
+        date: "23/04/2026",
+      },
+      {
+        name: "Bilal Hussain",
+        score: 7,
+        total: 10,
+        pct: 70,
+        cat: "geography",
+        date: "22/04/2026",
+      },
+      {
+        name: "Ayesha Noor",
+        score: 6,
+        total: 10,
+        pct: 60,
+        cat: "history",
+        date: "22/04/2026",
+      },
+    ];
+
+    let allEntries = [...defaultEntries];
+    const stored = JSON.parse(localStorage.getItem("qm_leaderboard") || "[]");
+    allEntries = [...stored, ...allEntries].sort(
+      (a, b) => b.pct - a.pct || b.score - a.score,
+    );
+
+    let activeTab = "all";
+    let activeCat = "all";
+
+    function setTab(tab, el) {
+      activeTab = tab;
+      document
+        .querySelectorAll(".filter-row:first-child .filter-pill")
+        .forEach((p) => p.classList.remove("active"));
+      el.classList.add("active");
+      render();
+    }
+
+    function setCatFilter(cat, el) {
+      activeCat = cat;
+      const pills = document.querySelectorAll(".filter-row");
+      if (pills[1])
+        pills[1]
+          .querySelectorAll(".filter-pill")
+          .forEach((p) => p.classList.remove("active"));
+      el.classList.add("active");
+      render();
+    }
+
+    const medals = ["🥇", "🥈", "🥉"];
+    const rankColors = [
+      { bg: "#fff3cd", color: "#b8860b" },
+      { bg: "#f0f0f0", color: "#616161" },
+      { bg: "#fbe9e7", color: "#bf360c" },
+    ];
+
+    function render() {
+      let data = [...allEntries];
+      if (activeCat !== "all") data = data.filter((e) => e.cat === activeCat);
+
+      // Podium (top 3)
+      const podium = document.getElementById("podium");
+      const top3 = data.slice(0, 3);
+      // Reorder: 2nd, 1st, 3rd for podium visual
+      const order = top3.length >= 3 ? [top3[1], top3[0], top3[2]] : top3;
+      const heights = ["80px", "110px", "60px"];
+      podium.innerHTML = order
+        .map((e, i) => {
+          const realRank = top3.indexOf(e);
+          if (!e) return "<div></div>";
+          return `
+      <div style="text-align:center">
+        <div style="font-size:1.5rem;margin-bottom:0.4rem">${medals[realRank] || ""}</div>
+        <div style="width:52px;height:52px;border-radius:50%;background:${rankColors[realRank]?.bg || "#eee"};color:${rankColors[realRank]?.color || "#333"};display:flex;align-items:center;justify-content:center;font-family:'Syne',sans-serif;font-weight:800;font-size:1rem;margin:0 auto 0.5rem">${e.name
+              .split(" ")
+              .map((w) => w[0])
+              .join("")
+              .toUpperCase()
+              .slice(0, 2)}</div>
+        <div style="font-family:'Syne',sans-serif;font-weight:700;font-size:0.88rem;color:var(--text-dark)">${e.name}</div>
+        <div style="font-size:0.78rem;color:var(--text-muted);margin-bottom:0.5rem">${e.pct}%</div>
+        <div style="height:${heights[i]};background:var(--plum);border-radius:8px 8px 0 0;display:flex;align-items:flex-start;justify-content:center;padding-top:0.5rem">
+          <span style="font-family:'Syne',sans-serif;font-weight:800;color:var(--sage);font-size:0.9rem">${e.score}/${e.total}</span>
+        </div>
+      </div>
+    `;
+        })
+        .join("");
+
+      // Table
+      const tbody = document.getElementById("lbBody");
+      if (data.length === 0) {
+        tbody.innerHTML =
+          '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">No entries yet. Play a quiz!</td></tr>';
+        return;
+      }
+      tbody.innerHTML = data
+        .map((e, i) => {
+          const rank = i + 1;
+          const rankDisplay = rank <= 3 ? medals[rank - 1] : rank;
+          const catIcons = {
+            science: "🧬",
+            history: "📚",
+            technology: "💻",
+            geography: "🌍",
+            popculture: "🎬",
+            sports: "⚽",
+            default: "🎯",
+          };
+          const initials = e.name
+            .split(" ")
+            .map((w) => w[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2);
+          const avatarColors = [
+            "#fff3cd,#b8860b",
+            "#e8e0f0,#514663",
+            "#e8f5e9,#388e3c",
+            "#fce4ec,#c2185b",
+            "#e3f2fd,#1565c0",
+            "#f3e5f5,#7b1fa2",
+          ];
+          const [bg, col] = avatarColors[i % avatarColors.length].split(",");
+          return `
+      <tr>
+        <td><span style="font-family:'Syne',sans-serif;font-weight:800;font-size:${rank <= 3 ? "1.1rem" : "0.9rem"}">${rankDisplay}</span></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:10px">
+            <div style="width:32px;height:32px;border-radius:50%;background:${bg};color:${col};display:flex;align-items:center;justify-content:center;font-weight:700;font-size:0.75rem;font-family:'Syne',sans-serif;flex-shrink:0">${initials}</div>
+            <span style="font-weight:600">${e.name}</span>
+          </div>
+        </td>
+        <td><span class="badge-cat">${catIcons[e.cat] || "🎯"} ${e.cat}</span></td>
+        <td><strong style="font-family:'Syne',sans-serif">${e.score}/${e.total}</strong></td>
+        <td>
+          <div style="display:flex;align-items:center;gap:6px">
+            <div style="flex:1;height:5px;background:var(--border);border-radius:5px;min-width:60px">
+              <div style="height:100%;width:${e.pct}%;background:var(--plum);border-radius:5px"></div>
+            </div>
+            <span style="font-size:0.82rem;font-weight:600;color:var(--text-muted)">${e.pct}%</span>
+          </div>
+        </td>
+        <td style="color:var(--text-muted);font-size:0.82rem">${e.date || "—"}</td>
+      </tr>
+    `;
+        })
+        .join("");
+    }
+
+    render();
+  </script>
+</body>
+
+</html>
