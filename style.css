@@ -1,5 +1,5 @@
 /* ===== QUIZMASTER - MODERN REDESIGN 2026 ===== */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Syne:wght@700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Syne:wght@700;800&display=swap');
 
 /* Apply the distinct display font to headers */
 h1,
@@ -8,36 +8,37 @@ h3,
 h4,
 h5,
 h6 {
-  font-family: "Syne", sans-serif !important;
+  font-family: "Milker", sans-serif !important;
   /* Syne is bold by nature; you might want to slightly adjust tracking for headers */
   letter-spacing: -0.02em;
 }
 
 :root {
-  --plum: #514663;
-  --plum-dark: #3a3246;
-  --plum-light: #6b5f82;
-  --sage: #a7f3d0;
-  --sage-light: #d1fae5;
-  --sage-dark: #059669;
+  /* === Light Mode: Steel Blue === */
+  --plum: #091932;
+  --plum-dark: #050f1e;
+  --plum-light: #5C7193;
+  --sage: #7AA7EE;
+  --sage-light: #c5d9f8;
+  --sage-dark: #5C7193;
   --card-bg: #ffffff;
-  --body-bg: #f5f3ff;
-  --text-dark: #18181b;
-  --text-muted: #71717a;
-  --border: rgba(81, 70, 99, 0.12);
-  --shadow-sm: 0 1px 3px rgba(81, 70, 99, 0.08);
-  --shadow-md: 0 4px 24px rgba(81, 70, 99, 0.1);
-  --shadow-lg: 0 16px 48px rgba(81, 70, 99, 0.14);
+  --body-bg: #f4f7fc;
+  --text-dark: #121316;
+  --text-muted: #5C7193;
+  --border: rgba(9, 25, 50, 0.13);
+  --shadow-sm: 0 1px 3px rgba(9, 25, 50, 0.08);
+  --shadow-md: 0 4px 24px rgba(9, 25, 50, 0.1);
+  --shadow-lg: 0 16px 48px rgba(9, 25, 50, 0.14);
   --radius-sm: 10px;
   --radius-md: 14px;
   --radius-lg: 20px;
   --radius-xl: 28px;
-  --primary: #6366f1;
-  --primary-dark: #4338ca;
-  --accent: #fbbf24;
-  --background: #f5f3ff;
-  --surface: #fff;
-  --text: #18181b;
+  --primary: #091932;
+  --primary-dark: #050f1e;
+  --accent: #7AA7EE;
+  --background: #f4f7fc;
+  --surface: #ffffff;
+  --text: #121316;
   --danger: #ef4444;
   --success: #22c55e;
   --transition: all 0.22s cubic-bezier(0.4, 0, 0.2, 1);
@@ -64,7 +65,7 @@ h6 {
 }
 
 body {
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   background: var(--background);
   color: var(--text);
   min-height: 100vh;
@@ -78,7 +79,7 @@ body {
 .theme-btn,
 .qcard-option,
 .qm-label {
-  font-family: "Plus Jakarta Sans", sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 /* ===== SCROLLBAR ===== */
@@ -97,10 +98,10 @@ body {
 
 /* ===== NAV ===== */
 .qm-nav {
-  background: rgba(255, 255, 255, 0.85);
+  background: #091932;
   backdrop-filter: blur(18px);
   -webkit-backdrop-filter: blur(18px);
-  border-bottom: 1px solid var(--border);
+  border-bottom: 1px solid rgba(122, 167, 238, 0.2);
   padding: 0 2rem;
   height: 64px;
   display: flex;
@@ -120,7 +121,7 @@ body {
   font-family: 'Syne', sans-serif;
   font-size: 1.35rem;
   font-weight: 800;
-  color: var(--plum);
+  color: #ffffff;
   letter-spacing: -0.5px;
   display: flex;
   align-items: center;
@@ -139,7 +140,7 @@ body {
   background: linear-gradient(135deg, var(--sage), var(--sage-dark));
   border-radius: 50%;
   animation: pulse 2.4s ease-in-out infinite;
-  box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.4);
+  box-shadow: 0 0 0 0 rgba(122, 167, 238, 0.4);
 }
 
 @keyframes pulse {
@@ -147,7 +148,7 @@ body {
   0%,
   100% {
     transform: scale(1);
-    box-shadow: 0 0 0 0 rgba(5, 150, 105, 0.4);
+    box-shadow: 0 0 0 0 rgba(122, 167, 238, 0.4);
   }
 
   50% {
@@ -163,7 +164,7 @@ body {
 }
 
 .nav-links a {
-  color: var(--text-muted);
+  color: rgba(255,255,255,0.75);
   text-decoration: none;
   font-size: 0.875rem;
   font-weight: 600;
@@ -202,7 +203,7 @@ body {
   color: var(--text-dark);
   transition: var(--transition);
   margin-left: 0.5rem;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   display: flex;
   align-items: center;
   gap: 5px;
@@ -372,7 +373,7 @@ body {
 .btn-outline-custom {
   background: transparent;
   color: var(--plum);
-  border: 2px solid rgba(81, 70, 99, 0.3);
+  border: 2px solid rgba(9, 25, 50, 0.3);
   padding: 0.68rem 1.55rem;
   border-radius: 50px;
   font-size: 0.9rem;
@@ -1154,7 +1155,7 @@ body {
   display: flex;
   align-items: center;
   gap: 13px;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   text-align: left;
   font-weight: 500;
 }
@@ -1627,7 +1628,7 @@ body {
   padding: 0.65rem 1rem;
   font-size: 0.88rem;
   color: var(--text-dark);
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   transition: var(--transition);
   outline: none;
   font-weight: 500;
@@ -1860,7 +1861,7 @@ body {
   border-radius: 50px;
   padding: 0.45rem 1.1rem;
   font-size: 0.84rem;
-  font-family: 'Plus Jakarta Sans', sans-serif;
+  font-family: 'Inter', sans-serif;
   font-weight: 600;
   cursor: pointer;
   transition: var(--transition);
