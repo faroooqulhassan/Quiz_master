@@ -383,6 +383,15 @@
       const found = allCategories.find((c) => c.id === urlCat);
       if (found) openModal(found.id, found.icon, found.name);
     }
+     (function() {
+    const isAdmin = window.location.pathname.endsWith('admin.html');
+    const adminLink = document.getElementById('adminNavLink');
+    const adminMob  = document.getElementById('adminMobLink');
+    if (!isAdmin) {
+      if (adminLink) adminLink.style.display = 'none';
+      if (adminMob)  adminMob.style.display  = 'none';
+    }
+  })();
   </script>
 </body>
 

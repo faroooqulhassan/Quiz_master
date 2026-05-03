@@ -35,7 +35,7 @@
       <a href="index.html">Home</a>
       <a href="categories.html">Categories</a>
       <a href="leaderboard.html">Leaderboard</a>
-      <a href="admin.html" class="active">Admin</a>
+      <a href="admin.html" class="active" id="adminNavLink">Admin</a>
       <button class="theme-btn" onclick="toggleTheme()" id="themeBtn">
         🌙 Dark
       </button>
@@ -48,7 +48,7 @@
     <a href="index.html">Home</a>
     <a href="categories.html">Categories</a>
     <a href="leaderboard.html">Leaderboard</a>
-    <a href="admin.html">Admin</a>
+    <a href="admin.html" id="adminMobLink">Admin</a>
   </div>
 
   <div class="admin-layout">
@@ -765,6 +765,15 @@
   if (sessionStorage.getItem('admin_auth') === '1') {
     document.getElementById('adminGate').style.display = 'none';
   }
+   (function() {
+    const isAdmin = window.location.pathname.endsWith('admin.html');
+    const adminLink = document.getElementById('adminNavLink');
+    const adminMob  = document.getElementById('adminMobLink');
+    if (!isAdmin) {
+      if (adminLink) adminLink.style.display = 'none';
+      if (adminMob)  adminMob.style.display  = 'none';
+    }
+  })();
 </script>
 </body>
 

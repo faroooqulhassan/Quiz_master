@@ -525,6 +525,15 @@
           <span style="font-size:0.71rem;color:var(--text-muted);width:30px;text-align:right;font-weight:600">${r.count}</span>
         </div>`).join('');
     }
+     (function() {
+    const isAdmin = window.location.pathname.endsWith('admin.html');
+    const adminLink = document.getElementById('adminNavLink');
+    const adminMob  = document.getElementById('adminMobLink');
+    if (!isAdmin) {
+      if (adminLink) adminLink.style.display = 'none';
+      if (adminMob)  adminMob.style.display  = 'none';
+    }
+  })();
   </script>
 </body>
 
