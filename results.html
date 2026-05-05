@@ -274,31 +274,49 @@
         .join("");
     }
 
-    function submitScore() {
+    async function submitScore() {
       const name = document.getElementById("playerName").value.trim();
       if (!name) {
         showToast("Please enter your name!", "error");
         return;
       }
-      // POST to API: fetch('/api/leaderboard', { method:'POST', body: JSON.stringify({name, score, total, cat}) })
-      const entries = JSON.parse(
-        localStorage.getItem("qm_leaderboard") || "[]",
-      );
-      entries.push({
+
+      const entry = {
         name,
         score,
         total,
         pct,
         cat,
-        date: new Date().toLocaleDateString(),
-      });
-      entries.sort((a, b) => b.score - a.score);
-      localStorage.setItem(
-        "qm_leaderboard",
-        JSON.stringify(entries.slice(0, 50)),
-      );
-      showToast(`Score submitted! Great job, ${name}!`, "success");
-      document.getElementById("playerName").value = "";
+        date: new Date().toISOString()
+      };
+
+      try {
+        // POST to API
+        await fetch('http://localhost:5000/api/leaderboard', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(entry)
+        });
+
+        // Also save to localStorage for merging
+        const entries = JSON.parse(localStorage.getItem("qm_leaderboard") || "[]");
+        entries.push({
+          name,
+          score,
+          total,
+          pct,
+          cat,
+          date: new Date().toLocaleDateString(),
+        });
+        entries.sort((a, b) => b.score - a.score);
+        localStorage.setItem("qm_leaderboard", JSON.stringify(entries.slice(0, 50)));
+
+        showToast(`Score submitted! Great job, ${name}!`, "success");
+        document.getElementById("playerName").value = "";
+      } catch (error) {
+        console.error('Error submitting score:', error);
+        showToast("Error submitting score!", "error");
+      }
     }
     // ---- CONFETTI on results page ----
     (function () {

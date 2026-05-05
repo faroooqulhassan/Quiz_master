@@ -126,79 +126,51 @@
 
   <script src="main.js"></script>
   <script>
-    // Default leaderboard data (will merge with localStorage entries from results page)
-    const defaultEntries = [
-      {
-        name: "Ali Khan",
-        score: 10,
-        total: 10,
-        pct: 100,
-        cat: "technology",
-        date: "25/04/2026",
-      },
-      {
-        name: "Sara Raza",
-        score: 9,
-        total: 10,
-        pct: 90,
-        cat: "science",
-        date: "25/04/2026",
-      },
-      {
-        name: "Usman Haider",
-        score: 9,
-        total: 10,
-        pct: 90,
-        cat: "geography",
-        date: "24/04/2026",
-      },
-      {
-        name: "Mariam Fatima",
-        score: 8,
-        total: 10,
-        pct: 80,
-        cat: "history",
-        date: "24/04/2026",
-      },
-      {
-        name: "Zain Ahmed",
-        score: 8,
-        total: 10,
-        pct: 80,
-        cat: "technology",
-        date: "23/04/2026",
-      },
-      {
-        name: "Hina Malik",
-        score: 7,
-        total: 10,
-        pct: 70,
-        cat: "science",
-        date: "23/04/2026",
-      },
-      {
-        name: "Bilal Hussain",
-        score: 7,
-        total: 10,
-        pct: 70,
-        cat: "geography",
-        date: "22/04/2026",
-      },
-      {
-        name: "Ayesha Noor",
-        score: 6,
-        total: 10,
-        pct: 60,
-        cat: "history",
-        date: "22/04/2026",
-      },
-    ];
+    let allEntries = [];
 
-    let allEntries = [...defaultEntries];
-    const stored = JSON.parse(localStorage.getItem("qm_leaderboard") || "[]");
-    allEntries = [...stored, ...allEntries].sort(
-      (a, b) => b.pct - a.pct || b.score - a.score,
-    );
+    async function loadLeaderboard() {
+      try {
+        const response = await fetch('http://localhost:5000/api/leaderboard');
+        const apiData = await response.json();
+        // Convert API format to frontend format
+        allEntries = apiData.map(entry => ({
+          name: entry.name,
+          score: entry.score,
+          total: entry.total,
+          pct: entry.pct,
+          cat: entry.cat,
+          date: new Date(entry.date).toLocaleDateString('en-GB')
+        }));
+        // Merge with localStorage entries
+        const stored = JSON.parse(localStorage.getItem("qm_leaderboard") || "[]");
+        allEntries = [...stored, ...allEntries].sort(
+          (a, b) => b.pct - a.pct || b.score - a.score,
+        );
+        render();
+      } catch (error) {
+        console.error('Error loading leaderboard:', error);
+        // Fallback to default data
+        allEntries = [
+          {
+            name: "Ali Khan",
+            score: 10,
+            total: 10,
+            pct: 100,
+            cat: "technology",
+            date: "25/04/2026",
+          },
+          {
+            name: "Sara Raza",
+            score: 9,
+            total: 10,
+            pct: 90,
+            cat: "science",
+            date: "25/04/2026",
+          },
+        ];
+        render();
+      }
+    }
 
     let activeTab = "all";
     let activeCat = "all";
@@ -334,6 +306,8 @@
       if (adminMob)  adminMob.style.display  = 'none';
     }
   })();
+
+  loadLeaderboard();
   </script>
 </body>
 

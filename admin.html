@@ -441,23 +441,44 @@
 
   <script src="main.js"></script>
   <script>
-    // ---- DATA ----
-    let questions = JSON.parse(
-      localStorage.getItem("qm_admin_questions") || "[]",
-    );
-    let categories = JSON.parse(
-      localStorage.getItem("qm_admin_cats") ||
-      JSON.stringify([
-        { name: "Science", icon: "🧬" },
-        { name: "History", icon: "📚" },
-        { name: "Technology", icon: "💻" },
-        { name: "Geography", icon: "🌍" },
-        { name: "Pop Culture", icon: "🎬" },
-        { name: "Sports", icon: "⚽" },
-      ]),
-    );
-    const leaderboardData = () =>
-      JSON.parse(localStorage.getItem("qm_leaderboard") || "[]");
+    // ---- API FUNCTIONS ----
+    const API_BASE = 'http://localhost:5000/api';
+
+    async function apiGet(endpoint) {
+      const response = await fetch(`${API_BASE}${endpoint}`);
+      return response.json();
+    }
+
+    async function apiPost(endpoint, data) {
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      return response.json();
+    }
+
+    async function apiPut(endpoint, data) {
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+      return response.json();
+    }
+
+    async function apiDelete(endpoint) {
+      const response = await fetch(`${API_BASE}${endpoint}`, {
+        method: 'DELETE'
+      });
+      return response.json();
+    }
+
+    // ---- DATA MANAGEMENT ----
+    let questions = [];
+    let categories = [];
+    let leaderboardData = [];
+
     const diffColors = {
       easy: "#e8f5e9",
       medium: "#fff3e0",
@@ -475,11 +496,19 @@
       language: "🗣️",
     };
 
-    function saveQuestions() {
-      localStorage.setItem("qm_admin_questions", JSON.stringify(questions));
-    }
-    function saveCats() {
-      localStorage.setItem("qm_admin_cats", JSON.stringify(categories));
+    // Load data from backend
+    async function loadData() {
+      try {
+        questions = await apiGet('/quizzes');
+        categories = await apiGet('/categories');
+        leaderboardData = await apiGet('/leaderboard');
+      } catch (error) {
+        console.error('Error loading data:', error);
+        // Fallback to empty arrays
+        questions = [];
+        categories = [];
+        leaderboardData = [];
+      }
     }
 
     // ---- SECTION SWITCHING ----
@@ -503,10 +532,9 @@
     // ---- OVERVIEW ----
     function renderOverview() {
       document.getElementById("statTotalQ").textContent = questions.length;
-      const lb = leaderboardData();
-      document.getElementById("statPlayers").textContent = lb.length;
-      const avg = lb.length
-        ? Math.round(lb.reduce((s, e) => s + e.pct, 0) / lb.length)
+      document.getElementById("statPlayers").textContent = leaderboardData.length;
+      const avg = leaderboardData.length
+        ? Math.round(leaderboardData.reduce((s, e) => s + e.pct, 0) / leaderboardData.length)
         : 0;
       document.getElementById("statAvg").textContent = avg + "%";
 
@@ -519,8 +547,8 @@
             (q, i) => `
     <tr>
       <td>${questions.length - i}</td>
-      <td style="max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${q.q}</td>
-      <td><span class="badge-cat">${catIcons[q.cat] || "🎯"} ${q.cat}</span></td>
+      <td style="max-width:300px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${q.question}</td>
+      <td><span class="badge-cat">${catIcons[q.category] || "🎯"} ${q.category}</span></td>
       <td><div class="action-btns"><button class="btn-edit" onclick="editQuestion(${questions.length - 1 - i})">Edit</button><button class="btn-delete" onclick="deleteQuestion(${questions.length - 1 - i})">Delete</button></div></td>
     </tr>
   `,
@@ -531,7 +559,7 @@
       // Leaderboard
       const lbBody = document.getElementById("adminLbBody");
       lbBody.innerHTML =
-        lb
+        leaderboardData
           .slice(0, 5)
           .map(
             (e, i) => `
@@ -543,7 +571,7 @@
     }
 
     // ---- ADD QUESTION ----
-    function addQuestion() {
+    async function addQuestion() {
       const cat = document.getElementById("addCat").value;
       const diff = document.getElementById("addDiff").value;
       const q = document.getElementById("addQuestion").value.trim();
@@ -558,17 +586,25 @@
         return;
       }
 
-      questions.push({
-        cat,
-        diff,
-        q,
-        opts: [optA, optB, optC, optD],
-        ans: parseInt(correct.value),
+      const newQuestion = {
+        question: q,
+        options: [optA, optB, optC, optD],
+        correct: parseInt(correct.value),
+        category: cat,
+        difficulty: diff,
         explanation: document.getElementById("addExplanation").value.trim(),
-      });
-      saveQuestions();
-      showToast("Question added successfully!", "success");
-      clearForm();
+      };
+
+      try {
+        const result = await apiPost('/quizzes', newQuestion);
+        questions.push(result);
+        showToast("Question added successfully!", "success");
+        clearForm();
+        renderOverview();
+      } catch (error) {
+        console.error('Error adding question:', error);
+        showToast("Error adding question!", "error");
+      }
     }
 
     function clearForm() {
@@ -598,8 +634,8 @@
       const catF = document.getElementById("qCatFilter")?.value || "";
       let data = questions.map((q, i) => ({ ...q, i }));
       if (search)
-        data = data.filter((q) => q.q.toLowerCase().includes(search));
-      if (catF) data = data.filter((q) => q.cat === catF);
+        data = data.filter((q) => q.question.toLowerCase().includes(search));
+      if (catF) data = data.filter((q) => q.category === catF);
 
       const tbody = document.getElementById("manageQBody");
       tbody.innerHTML = data.length
@@ -608,9 +644,9 @@
             (q) => `
     <tr>
       <td>${q.i + 1}</td>
-      <td style="max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${q.q}</td>
-      <td><span class="badge-cat">${catIcons[q.cat] || "🎯"} ${q.cat}</span></td>
-      <td><span style="background:${diffColors[q.diff]};color:${diffText[q.diff]};font-size:0.72rem;font-weight:700;padding:3px 8px;border-radius:50px;font-family:'Syne',sans-serif">${q.diff}</span></td>
+      <td style="max-width:280px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">${q.question}</td>
+      <td><span class="badge-cat">${catIcons[q.category] || "🎯"} ${q.category}</span></td>
+      <td><span style="background:${diffColors[q.difficulty]};color:${diffText[q.difficulty]};font-size:0.72rem;font-weight:700;padding:3px 8px;border-radius:50px;font-family:'Syne',sans-serif">${q.difficulty}</span></td>
       <td><div class="action-btns"><button class="btn-edit" onclick="editQuestion(${q.i})">Edit</button><button class="btn-delete" onclick="deleteQuestion(${q.i})">Delete</button></div></td>
     </tr>
   `,
@@ -619,30 +655,38 @@
         : '<tr><td colspan="5" style="text-align:center;padding:2rem;color:var(--text-muted)">No questions found.</td></tr>';
     }
 
-    function deleteQuestion(i) {
+    async function deleteQuestion(i) {
       if (!confirm("Delete this question?")) return;
-      questions.splice(i, 1);
-      saveQuestions();
-      renderQTable();
-      showToast("Question deleted.", "success");
+
+      const question = questions[i];
+      try {
+        await apiDelete(`/quizzes/${question.id}`);
+        questions.splice(i, 1);
+        renderQTable();
+        renderOverview();
+        showToast("Question deleted.", "success");
+      } catch (error) {
+        console.error('Error deleting question:', error);
+        showToast("Error deleting question!", "error");
+      }
     }
 
     function editQuestion(i) {
       const q = questions[i];
-      document.getElementById("editQ").value = q.q;
-      document.getElementById("editOptA").value = q.opts[0] || "";
-      document.getElementById("editOptB").value = q.opts[1] || "";
-      document.getElementById("editOptC").value = q.opts[2] || "";
-      document.getElementById("editOptD").value = q.opts[3] || "";
+      document.getElementById("editQ").value = q.question;
+      document.getElementById("editOptA").value = q.options[0] || "";
+      document.getElementById("editOptB").value = q.options[1] || "";
+      document.getElementById("editOptC").value = q.options[2] || "";
+      document.getElementById("editOptD").value = q.options[3] || "";
       document.getElementById("editIndex").value = i;
       const radio = document.querySelector(
-        `input[name="editCorrect"][value="${q.ans}"]`,
+        `input[name="editCorrect"][value="${q.correct}"]`,
       );
       if (radio) radio.checked = true;
       document.getElementById("editModal").style.display = "flex";
     }
 
-    function saveEdit() {
+    async function saveEdit() {
       const i = parseInt(document.getElementById("editIndex").value);
       const correct = document.querySelector(
         'input[name="editCorrect"]:checked',
@@ -651,18 +695,33 @@
         showToast("Select correct answer!", "error");
         return;
       }
-      questions[i].q = document.getElementById("editQ").value.trim();
-      questions[i].opts = [
-        document.getElementById("editOptA").value.trim(),
-        document.getElementById("editOptB").value.trim(),
-        document.getElementById("editOptC").value.trim(),
-        document.getElementById("editOptD").value.trim(),
-      ];
-      questions[i].ans = parseInt(correct.value);
-      saveQuestions();
-      closeEditModal();
-      renderQTable();
-      showToast("Question updated!", "success");
+
+      const question = questions[i];
+      const updatedQuestion = {
+        question: document.getElementById("editQ").value.trim(),
+        options: [
+          document.getElementById("editOptA").value.trim(),
+          document.getElementById("editOptB").value.trim(),
+          document.getElementById("editOptC").value.trim(),
+          document.getElementById("editOptD").value.trim(),
+        ],
+        correct: parseInt(correct.value),
+        category: question.category,
+        difficulty: question.difficulty,
+        explanation: question.explanation,
+      };
+
+      try {
+        const result = await apiPut(`/quizzes/${question.id}`, updatedQuestion);
+        questions[i] = result;
+        closeEditModal();
+        renderQTable();
+        renderOverview();
+        showToast("Question updated!", "success");
+      } catch (error) {
+        console.error('Error updating question:', error);
+        showToast("Error updating question!", "error");
+      }
     }
 
     function closeEditModal() {
@@ -678,7 +737,7 @@
     <tr>
       <td style="font-size:1.4rem">${c.icon}</td>
       <td><strong>${c.name}</strong></td>
-      <td>${questions.filter((q) => q.cat === c.name.toLowerCase()).length}</td>
+      <td>${questions.filter((q) => q.category === c.name.toLowerCase()).length}</td>
       <td><button class="btn-delete" onclick="deleteCategory(${i})">Delete</button></td>
     </tr>
   `,
@@ -686,42 +745,56 @@
         .join("");
     }
 
-    function addCategory() {
+    async function addCategory() {
       const name = document.getElementById("newCatName").value.trim();
       const icon = document.getElementById("newCatIcon").value.trim() || "📁";
       if (!name) {
         showToast("Enter category name!", "error");
         return;
       }
-      categories.push({ name, icon });
-      saveCats();
-      renderCatTable();
-      document.getElementById("newCatName").value = "";
-      document.getElementById("newCatIcon").value = "";
-      showToast("Category added!", "success");
+
+      const tag = name.toLowerCase().replace(/\s+/g, '');
+      const newCategory = { name, icon, tag, desc: name };
+      try {
+        const result = await apiPost('/categories', newCategory);
+        categories.push(result);
+        renderCatTable();
+        document.getElementById("newCatName").value = "";
+        document.getElementById("newCatIcon").value = "";
+        showToast("Category added!", "success");
+      } catch (error) {
+        console.error('Error adding category:', error);
+        showToast("Error adding category!", "error");
+      }
     }
 
-    function deleteCategory(i) {
+    async function deleteCategory(i) {
       if (!confirm("Delete this category?")) return;
-      categories.splice(i, 1);
-      saveCats();
-      renderCatTable();
-      showToast("Category deleted.", "success");
+
+      const category = categories[i];
+      try {
+        await apiDelete(`/categories/${category.id}`);
+        categories.splice(i, 1);
+        renderCatTable();
+        showToast("Category deleted.", "success");
+      } catch (error) {
+        console.error('Error deleting category:', error);
+        showToast("Error deleting category!", "error");
+      }
     }
 
     // ---- LEADERBOARD ADMIN ----
     function renderAdminLb() {
-      const lb = leaderboardData();
       const tbody = document.getElementById("adminFullLbBody");
-      tbody.innerHTML = lb.length
-        ? lb
+      tbody.innerHTML = leaderboardData.length
+        ? leaderboardData
           .map(
             (e, i) => `
     <tr>
       <td><strong>${i + 1}</strong></td>
       <td>${e.name}</td>
       <td>${e.score}/${e.total} (${e.pct}%)</td>
-      <td><span class="badge-cat">${catIcons[e.cat] || "🎯"} ${e.cat || "—"}</span></td>
+      <td><span class="badge-cat">${catIcons[e.category] || "🎯"} ${e.category || "—"}</span></td>
       <td>${e.date || "—"}</td>
       <td><button class="btn-delete" onclick="deleteLbEntry(${i})">Delete</button></td>
     </tr>
@@ -731,23 +804,46 @@
         : '<tr><td colspan="6" style="text-align:center;padding:2rem;color:var(--text-muted)">No entries yet.</td></tr>';
     }
 
-    function deleteLbEntry(i) {
-      const lb = leaderboardData();
-      lb.splice(i, 1);
-      localStorage.setItem("qm_leaderboard", JSON.stringify(lb));
-      renderAdminLb();
-      showToast("Entry removed.", "success");
+    async function deleteLbEntry(i) {
+      const entry = leaderboardData[i];
+      if (!confirm("Delete this leaderboard entry?")) return;
+
+      try {
+        await apiDelete(`/leaderboard/${entry.id}`);
+        leaderboardData.splice(i, 1);
+        renderAdminLb();
+        renderOverview();
+        showToast("Entry removed.", "success");
+      } catch (error) {
+        console.error('Error deleting leaderboard entry:', error);
+        showToast("Error deleting entry!", "error");
+      }
     }
 
-    function clearLeaderboard() {
+    async function clearLeaderboard() {
       if (!confirm("Clear ALL leaderboard entries?")) return;
-      localStorage.removeItem("qm_leaderboard");
-      renderAdminLb();
-      showToast("Leaderboard cleared.", "success");
+
+      try {
+        // Delete all entries
+        for (const entry of leaderboardData) {
+          await apiDelete(`/leaderboard/${entry.id}`);
+        }
+        leaderboardData = [];
+        renderAdminLb();
+        renderOverview();
+        showToast("Leaderboard cleared.", "success");
+      } catch (error) {
+        console.error('Error clearing leaderboard:', error);
+        showToast("Error clearing leaderboard!", "error");
+      }
     }
 
     // ---- INIT ----
-    renderOverview();
+    async function init() {
+      await loadData();
+      renderOverview();
+    }
+    init();
   </script>
   <script>
   function checkPass() {

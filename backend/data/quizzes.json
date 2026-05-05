@@ -1,0 +1,422 @@
+[
+  {
+    "id": 1,
+    "category": "science",
+    "difficulty": "easy",
+    "question": "What planet is known as the Red Planet?",
+    "options": [
+      "Earth",
+      "Mars",
+      "Jupiter",
+      "Saturn"
+    ],
+    "correct": 1,
+    "explanation": "Mars is called the Red Planet."
+  },
+  {
+    "id": 2,
+    "category": "science",
+    "difficulty": "easy",
+    "question": "Water chemical formula?",
+    "options": [
+      "H2O",
+      "CO2",
+      "O2",
+      "NaCl"
+    ],
+    "correct": 0,
+    "explanation": "Water = H2O"
+  },
+  {
+    "id": 3,
+    "category": "science",
+    "difficulty": "easy",
+    "question": "hi",
+    "options": [
+      "hi",
+      "kisy",
+      "ho",
+      "?"
+    ],
+    "correct": 0,
+    "explanation": ""
+  },
+  {
+    "id": 4,
+    "category": "science",
+    "difficulty": "easy",
+    "question": "What is the hardest natural substance?",
+    "options": [
+      "Iron",
+      "Diamond",
+      "Gold",
+      "Platinum"
+    ],
+    "correct": 1,
+    "explanation": "Diamond is the hardest natural substance on Earth."
+  },
+  {
+    "id": 5,
+    "category": "science",
+    "difficulty": "easy",
+    "question": "What is the boiling point of water?",
+    "options": [
+      "90°C",
+      "100°C",
+      "110°C",
+      "120°C"
+    ],
+    "correct": 1,
+    "explanation": "Water boils at 100°C (212°F) at sea level."
+  },
+  {
+    "id": 6,
+    "category": "science",
+    "difficulty": "medium",
+    "question": "Which organ pumps blood through the human body?",
+    "options": [
+      "Brain",
+      "Liver",
+      "Heart",
+      "Kidney"
+    ],
+    "correct": 2,
+    "explanation": "The heart pumps blood throughout the body."
+  },
+  {
+    "id": 7,
+    "category": "science",
+    "difficulty": "medium",
+    "question": "What gas do plants release during photosynthesis?",
+    "options": [
+      "Carbon Dioxide",
+      "Nitrogen",
+      "Oxygen",
+      "Hydrogen"
+    ],
+    "correct": 2,
+    "explanation": "Plants release oxygen during photosynthesis."
+  },
+  {
+    "id": 8,
+    "category": "science",
+    "difficulty": "hard",
+    "question": "What is the pH value of pure water?",
+    "options": [
+      "5",
+      "6",
+      "7",
+      "8"
+    ],
+    "correct": 2,
+    "explanation": "Pure water has a neutral pH of 7."
+  },
+  {
+    "id": 9,
+    "category": "technology",
+    "difficulty": "easy",
+    "question": "What does CPU stand for?",
+    "options": [
+      "Central Processing Unit",
+      "Computer Personal Unit",
+      "Central Program Utility",
+      "Core Processing Unit"
+    ],
+    "correct": 0,
+    "explanation": "CPU = Central Processing Unit"
+  },
+  {
+    "id": 10,
+    "category": "technology",
+    "difficulty": "easy",
+    "question": "Who founded Microsoft?",
+    "options": [
+      "Steve Jobs",
+      "Bill Gates",
+      "Mark Zuckerberg",
+      "Jeff Bezos"
+    ],
+    "correct": 1,
+    "explanation": "Bill Gates co-founded Microsoft in 1975."
+  },
+  {
+    "id": 11,
+    "category": "technology",
+    "difficulty": "medium",
+    "question": "What does 'HTTP' stand for?",
+    "options": [
+      "HyperText Transfer Protocol",
+      "High Transfer Text Protocol",
+      "Hyper Transfer Text Protocol",
+      "HyperText Transfer Program"
+    ],
+    "correct": 0,
+    "explanation": "HTTP = HyperText Transfer Protocol"
+  },
+  {
+    "id": 12,
+    "category": "technology",
+    "difficulty": "medium",
+    "question": "Which company makes the Android operating system?",
+    "options": [
+      "Apple",
+      "Microsoft",
+      "Google",
+      "Samsung"
+    ],
+    "correct": 2,
+    "explanation": "Google develops Android OS."
+  },
+  {
+    "id": 13,
+    "category": "technology",
+    "difficulty": "hard",
+    "question": "What does 'API' stand for?",
+    "options": [
+      "Application Programming Interface",
+      "Application Program Input",
+      "Advanced Programming Interface",
+      "Application Process Integration"
+    ],
+    "correct": 0,
+    "explanation": "API = Application Programming Interface"
+  },
+  {
+    "id": 14,
+    "category": "history",
+    "difficulty": "easy",
+    "question": "Who painted the Mona Lisa?",
+    "options": [
+      "Van Gogh",
+      "Picasso",
+      "Da Vinci",
+      "Rembrandt"
+    ],
+    "correct": 2,
+    "explanation": "Leonardo da Vinci painted the Mona Lisa."
+  },
+  {
+    "id": 15,
+    "category": "history",
+    "difficulty": "easy",
+    "question": "Who discovered penicillin?",
+    "options": [
+      "Marie Curie",
+      "Alexander Fleming",
+      "Louis Pasteur",
+      "Isaac Newton"
+    ],
+    "correct": 1,
+    "explanation": "Alexander Fleming discovered penicillin in 1928."
+  },
+  {
+    "id": 16,
+    "category": "history",
+    "difficulty": "medium",
+    "question": "In which year did World War I begin?",
+    "options": [
+      "1912",
+      "1914",
+      "1916",
+      "1918"
+    ],
+    "correct": 1,
+    "explanation": "World War I began in 1914."
+  },
+  {
+    "id": 17,
+    "category": "history",
+    "difficulty": "medium",
+    "question": "Who was the first man to walk on the moon?",
+    "options": [
+      "Buzz Aldrin",
+      "Neil Armstrong",
+      "Michael Collins",
+      "Yuri Gagarin"
+    ],
+    "correct": 1,
+    "explanation": "Neil Armstrong walked on the moon in 1969."
+  },
+  {
+    "id": 18,
+    "category": "history",
+    "difficulty": "hard",
+    "question": "What year did Pakistan become a republic?",
+    "options": [
+      "1947",
+      "1956",
+      "1962",
+      "1973"
+    ],
+    "correct": 1,
+    "explanation": "Pakistan became a republic in 1956."
+  },
+  {
+    "id": 19,
+    "category": "geography",
+    "difficulty": "easy",
+    "question": "What is the smallest country in the world?",
+    "options": [
+      "Monaco",
+      "San Marino",
+      "Vatican City",
+      "Malta"
+    ],
+    "correct": 2,
+    "explanation": "Vatican City is the smallest country."
+  },
+  {
+    "id": 20,
+    "category": "geography",
+    "difficulty": "easy",
+    "question": "Which desert is the largest in the world?",
+    "options": [
+      "Gobi",
+      "Sahara",
+      "Arabian",
+      "Kalahari"
+    ],
+    "correct": 1,
+    "explanation": "Sahara is the largest hot desert."
+  },
+  {
+    "id": 21,
+    "category": "geography",
+    "difficulty": "medium",
+    "question": "What is the tallest mountain in the world?",
+    "options": [
+      "K2",
+      "Kangchenjunga",
+      "Mount Everest",
+      "Makalu"
+    ],
+    "correct": 2,
+    "explanation": "Mount Everest is 8,848m tall."
+  },
+  {
+    "id": 22,
+    "category": "geography",
+    "difficulty": "medium",
+    "question": "Which river is the longest in the world?",
+    "options": [
+      "Amazon",
+      "Nile",
+      "Yangtze",
+      "Mississippi"
+    ],
+    "correct": 1,
+    "explanation": "The Nile River is the longest."
+  },
+  {
+    "id": 23,
+    "category": "sports",
+    "difficulty": "easy",
+    "question": "How many players are in a cricket team?",
+    "options": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "correct": 2,
+    "explanation": "A cricket team has 11 players."
+  },
+  {
+    "id": 24,
+    "category": "sports",
+    "difficulty": "easy",
+    "question": "Who won the FIFA World Cup 2022?",
+    "options": [
+      "France",
+      "Croatia",
+      "Argentina",
+      "Brazil"
+    ],
+    "correct": 2,
+    "explanation": "Argentina won the 2022 World Cup."
+  },
+  {
+    "id": 25,
+    "category": "sports",
+    "difficulty": "medium",
+    "question": "What is the national sport of Pakistan?",
+    "options": [
+      "Cricket",
+      "Hockey",
+      "Football",
+      "Squash"
+    ],
+    "correct": 1,
+    "explanation": "Field Hockey is the national sport of Pakistan."
+  },
+  {
+    "id": 26,
+    "category": "sports",
+    "difficulty": "medium",
+    "question": "Who has the most Ballon d'Or awards?",
+    "options": [
+      "Cristiano Ronaldo",
+      "Lionel Messi",
+      "Neymar",
+      "Mbappe"
+    ],
+    "correct": 1,
+    "explanation": "Lionel Messi has won 7 Ballon d'Or awards."
+  },
+  {
+    "id": 27,
+    "category": "popculture",
+    "difficulty": "easy",
+    "question": "Who played Iron Man in MCU?",
+    "options": [
+      "Chris Evans",
+      "Robert Downey Jr.",
+      "Chris Hemsworth",
+      "Scarlett Johansson"
+    ],
+    "correct": 1,
+    "explanation": "Robert Downey Jr. played Iron Man."
+  },
+  {
+    "id": 28,
+    "category": "popculture",
+    "difficulty": "easy",
+    "question": "Which band sang 'Bohemian Rhapsody'?",
+    "options": [
+      "The Beatles",
+      "Queen",
+      "Rolling Stones",
+      "Nirvana"
+    ],
+    "correct": 1,
+    "explanation": "Queen sang Bohemian Rhapsody."
+  },
+  {
+    "id": 29,
+    "category": "popculture",
+    "difficulty": "medium",
+    "question": "Who directed the movie 'Inception'?",
+    "options": [
+      "Steven Spielberg",
+      "James Cameron",
+      "Christopher Nolan",
+      "Quentin Tarantino"
+    ],
+    "correct": 2,
+    "explanation": "Christopher Nolan directed Inception."
+  },
+  {
+    "id": 30,
+    "category": "math",
+    "difficulty": "easy",
+    "question": "2+2=?",
+    "options": [
+      "5",
+      "4",
+      "10",
+      "2"
+    ],
+    "correct": 1,
+    "explanation": ""
+  }
+]

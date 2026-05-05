@@ -1,0 +1,65 @@
+[
+  {
+    "id": 1,
+    "name": "Science",
+    "icon": "fa-flask",
+    "tag": "science",
+    "desc": "Physics, chemistry, biology"
+  },
+  {
+    "id": 2,
+    "name": "History",
+    "icon": "fa-landmark",
+    "tag": "history",
+    "desc": "Past events"
+  },
+  {
+    "id": 3,
+    "name": "Technology",
+    "icon": "fa-microchip",
+    "tag": "technology",
+    "desc": "Computers & innovation"
+  },
+  {
+    "id": 4,
+    "name": "Geography",
+    "icon": "fa-globe",
+    "tag": "geography",
+    "desc": "Countries & nature"
+  },
+  {
+    "id": 5,
+    "name": "Test Category",
+    "icon": "fa-star",
+    "tag": "test",
+    "desc": "Test description"
+  },
+  {
+    "id": 6,
+    "name": "Sports",
+    "icon": "⚽",
+    "tag": "sports",
+    "desc": "Cricket, Football, Olympics"
+  },
+  {
+    "id": 7,
+    "name": "Pop Culture",
+    "icon": "🎬",
+    "tag": "popculture",
+    "desc": "Movies, Music, Celebrities"
+  },
+  {
+    "id": 8,
+    "name": "Mathematics",
+    "icon": "📐",
+    "tag": "math",
+    "desc": "Numbers, Algebra, Calculus"
+  },
+  {
+    "id": 9,
+    "name": "Language",
+    "icon": "🗣️",
+    "tag": "language",
+    "desc": "English, Urdu, Grammar"
+  }
+]
