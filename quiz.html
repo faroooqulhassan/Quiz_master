@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+    <script>
+  const API_BASE_URL = "https://quiz-master-jkco.vercel.app/"; 
+  // example: https://quizmaster-backend.onrender.com
+</script>
 </head>
 <body data-theme="light">
 
@@ -243,7 +247,7 @@
         if (byCat.length > 0) return byCat.map(q => ({ q: q.q, opts: q.opts, ans: q.ans }));
 
         // Phir backend se try karo
-        const response = await fetch(`http://localhost:5000/api/quizzes?cat=${cat}&diff=${diff}`);
+        const response = await fetch(`${API_BASE_URL}/api/quizzes?cat=${cat}&diff=${diff}`);
         const apiQ = await response.json();
         if (apiQ && apiQ.length > 0) {
           return apiQ.map(q => ({ q: q.question, opts: q.options, ans: q.correct }));

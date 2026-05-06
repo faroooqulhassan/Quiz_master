@@ -8,6 +8,10 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
+    <script>
+  const API_BASE_URL = "https://quiz-master-jkco.vercel.app/"; 
+  // example: https://quizmaster-backend.onrender.com
+</script>
 </head>
 <body data-theme="light">
   <nav class="qm-nav">
@@ -91,9 +95,9 @@
 
     async function loadCategories() {
       try {
-        const response = await fetch('http://localhost:5000/api/categories');
+        const response = await fetch(`${API_BASE_URL}/api/categories`);
         const apiCats = await response.json();
-        const quizzesResponse = await fetch('http://localhost:5000/api/quizzes');
+        const quizzesResponse = await fetch(`${API_BASE_URL}/api/quizzes`);
         const quizzes = await quizzesResponse.json();
 
         allCategories = apiCats.map(cat => ({
