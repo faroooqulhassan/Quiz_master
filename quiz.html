@@ -9,7 +9,7 @@
   <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css" rel="stylesheet" />
   <link rel="stylesheet" href="style.css" />
     <script>
-const API_BASE_URL = "https://backend-cifxqjxke-faroooqulhassan-gmailcoms-projects.vercel.app";  // example: https://quizmaster-backend.onrender.com
+const API_BASE_URL = "https://quiz-master-jkco.vercel.app";  // Backend alias
 </script>
 </head>
 <body data-theme="light">
@@ -240,23 +240,35 @@ const API_BASE_URL = "https://backend-cifxqjxke-faroooqulhassan-gmailcoms-projec
       try {
         // Pehle localStorage se admin questions check karo
         const stored = JSON.parse(localStorage.getItem('qm_admin_questions') || '[]');
+        console.log(`Found ${stored.length} stored questions`);
         const filtered = stored.filter(q => q.cat === cat && q.diff === diff);
+        console.log(`Filtered by ${cat}/${diff}: ${filtered.length} questions`);
         if (filtered.length > 0) return filtered.map(q => ({ q: q.q, opts: q.opts, ans: q.ans }));
-        const byCat = stored.filter(q => q.cat === cat);
-        if (byCat.length > 0) return byCat.map(q => ({ q: q.q, opts: q.opts, ans: q.ans }));
 
-        // Phir backend se try karo
+        const byCat = stored.filter(q => q.cat === cat);
+        console.log(`Filtered by ${cat} only: ${byCat.length} questions`);
+
+        // Phir backend se try karo first
+        console.log(`Fetching from API: ${API_BASE_URL}/api/quizzes?cat=${cat}&diff=${diff}`);
         const response = await fetch(`${API_BASE_URL}/api/quizzes?cat=${cat}&diff=${diff}`);
         const apiQ = await response.json();
+        console.log(`API returned ${apiQ.length} questions:`, apiQ);
         if (apiQ && apiQ.length > 0) {
           return apiQ.map(q => ({ q: q.question, opts: q.options, ans: q.correct }));
         }
-      } catch(e) {}
+
+        if (byCat.length > 0) {
+          console.log('Using same-category stored questions because API returned none');
+          return byCat.map(q => ({ q: q.q, opts: q.opts, ans: q.ans }));
+        }
+      } catch(e) {
+        console.error('Error loading questions:', e);
+      }
       // Aakhir mein hardcoded fallback
+      console.log(`Using fallback questions for ${cat}`);
       return questionBank[cat] || questionBank.default;
     }
 
-    // ============ PARAMS ============
     const params = new URLSearchParams(window.location.search);
     const cat  = params.get('cat')  || 'default';
     const diff = params.get('diff') || 'medium';
@@ -276,6 +288,8 @@ const API_BASE_URL = "https://backend-cifxqjxke-faroooqulhassan-gmailcoms-projec
     // ============ INIT ============
     async function initQuiz() {
       questions = await loadQuestions(cat, diff);
+      console.log(`Loaded ${questions.length} questions for ${cat}/${diff}`);
+      console.log('Questions array:', questions);
       if (questions.length === 0) questions = questionBank.default;
 
       document.getElementById('catTag').textContent = catNames[cat] || '🎯 Quiz';
@@ -291,11 +305,16 @@ const API_BASE_URL = "https://backend-cifxqjxke-faroooqulhassan-gmailcoms-projec
     }
 
     function renderQuestion() {
+      console.log(`Rendering question ${currentQ + 1} of ${questions.length}`);
       const q = questions[currentQ];
+      if (!q) {
+        console.error(`Question ${currentQ} not found!`);
+        return;
+      }
       const total = questions.length;
       const pct = Math.round((currentQ / total) * 100);
       document.getElementById('questionCard').innerHTML = `<div class="quiz-q-num">QUESTION ${currentQ + 1}</div><p class="quiz-question">${q.q}</p>`;
-      document.getElementById('progressLabel').textContent = `Question ${currentQ + 1} of ${total}`;
+      document.getElementById('progressLabel').textContent = `Question ${currentQ + 1} of ${total} (${cat}/${diff})`;
       document.getElementById('progressFill').style.width = pct + '%';
       document.getElementById('feedbackMsg').className = 'feedback-msg';
       document.getElementById('feedbackMsg').textContent = '';

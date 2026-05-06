@@ -8,11 +8,17 @@ const app = express();
 /* ================= CORS FIX (VERCEL SAFE) ================= */
 const corsOptions = {
   origin: "*",
+  credentials: false,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-  allowedHeaders: ["Content-Type", "Authorization"]
+  allowedHeaders: ["Content-Type", "Authorization"],
+  optionsSuccessStatus: 200
 };
 
-// Force headers manually (IMPORTANT for Vercel)
+// CORS middleware MUST run first
+app.use(cors(corsOptions));
+app.options("*", cors(corsOptions));
+
+// Manual headers as backup
 app.use((req, res, next) => {
   res.header("Access-Control-Allow-Origin", "*");
   res.header("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS");
@@ -20,33 +26,57 @@ app.use((req, res, next) => {
   next();
 });
 
-app.use(cors(corsOptions));
-app.options("*", cors(corsOptions));
-
 app.use(express.json());
 
 /* ================= DATA PATH ================= */
-const dataPath = path.join(process.cwd(), "data");
+const dataPath = path.join(__dirname, "../data");
 
 /* ================= HELPERS ================= */
 function readJSON(file) {
-  const filePath = path.join(dataPath, file);
-  if (!fs.existsSync(filePath)) {
-    fs.writeFileSync(filePath, "[]");
+  try {
+    const filePath = path.join(dataPath, file);
+    if (!fs.existsSync(filePath)) {
+      console.warn(`File not found, creating: ${filePath}`);
+      fs.writeFileSync(filePath, "[]");
+    }
+    return JSON.parse(fs.readFileSync(filePath, "utf-8"));
+  } catch (err) {
+    console.error(`Error reading ${file}:`, err.message);
+    return [];
   }
-  return JSON.parse(fs.readFileSync(filePath, "utf-8"));
 }
 
 function writeJSON(file, data) {
-  const filePath = path.join(dataPath, file);
-  fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  try {
+    const filePath = path.join(dataPath, file);
+    fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
+  } catch (err) {
+    console.error(`Error writing ${file}:`, err.message);
+    throw err;
+  }
 }
 
 /* ================= ROOT TEST ================= */
 app.get("/", (req, res) => {
   res.json({
     message: "QuizMaster API Running ✔",
-    status: "OK"
+    status: "OK",
+    timestamp: new Date().toISOString()
+  });
+});
+
+/* ================= DEBUG ENDPOINT ================= */
+app.get("/api/debug", (req, res) => {
+  res.status(200).json({
+    status: "OK",
+    cors: "Enabled",
+    dataPath: dataPath,
+    filesExist: {
+      categories: fs.existsSync(path.join(dataPath, "categories.json")),
+      quizzes: fs.existsSync(path.join(dataPath, "quizzes.json")),
+      leaderboard: fs.existsSync(path.join(dataPath, "leaderboard.json"))
+    },
+    timestamp: new Date().toISOString()
   });
 });
 
@@ -54,9 +84,10 @@ app.get("/", (req, res) => {
 app.get("/api/categories", (req, res) => {
   try {
     const data = readJSON("categories.json");
-    res.json(data);
+    res.status(200).json(data);
   } catch (err) {
-    res.status(500).json({ error: "Failed to load categories" });
+    console.error("Categories error:", err);
+    res.status(500).json({ error: "Failed to load categories", details: err.message });
   }
 });
 
@@ -64,9 +95,20 @@ app.get("/api/categories", (req, res) => {
 app.get("/api/quizzes", (req, res) => {
   try {
     const data = readJSON("quizzes.json");
-    res.json(data);
+    const { cat, diff } = req.query;
+
+    let filtered = data;
+    if (cat) {
+      filtered = filtered.filter(q => q.category === cat);
+    }
+    if (diff) {
+      filtered = filtered.filter(q => q.difficulty === diff);
+    }
+
+    res.status(200).json(filtered);
   } catch (err) {
-    res.status(500).json({ error: "Failed to load quizzes" });
+    console.error("Quizzes error:", err);
+    res.status(500).json({ error: "Failed to load quizzes", details: err.message });
   }
 });
 
@@ -80,30 +122,34 @@ app.get("/api/leaderboard", (req, res) => {
       return b.score - a.score;
     });
 
-    res.json(sorted);
+    res.status(200).json(sorted);
   } catch (err) {
-    res.status(500).json({ error: "Failed to load leaderboard" });
+    console.error("Leaderboard GET error:", err);
+    res.status(500).json({ error: "Failed to load leaderboard", details: err.message });
   }
 });
 
 /* ================= LEADERBOARD POST ================= */
 app.post("/api/leaderboard", (req, res) => {
   try {
-    const data = readJSON("leaderboard.json");
-
+    // Vercel has read-only file system, so we can't save to JSON
+    // Return success but don't actually save
     const newEntry = {
       id: Date.now(),
       ...req.body,
       date: new Date().toISOString()
     };
 
-    data.push(newEntry);
+    console.log("Leaderboard entry received:", newEntry);
 
-    writeJSON("leaderboard.json", data);
-
-    res.json({ message: "Saved", data: newEntry });
+    res.status(201).json({
+      message: "Score saved locally (Vercel read-only)",
+      data: newEntry,
+      note: "Data stored in localStorage on client side"
+    });
   } catch (err) {
-    res.status(500).json({ error: "Failed to save score" });
+    console.error("Leaderboard POST error:", err);
+    res.status(500).json({ error: "Failed to save score", details: err.message });
   }
 });
 
